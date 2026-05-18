@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Diary Pro</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta name="theme-color" content="#00b4db">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#0f172a;
+overflow:hidden;
+color:white;
+position:relative;
+}
+
+body::before{
+content:'';
+position:fixed;
+width:200%;
+height:200%;
+background:
+radial-gradient(circle,#00b4db33 1px,transparent 1px);
+background-size:40px 40px;
+animation:bgMove 30s linear infinite;
+z-index:-1;
+}
+
+@keyframes bgMove{
+from{
+transform:translate(0,0);
+}
+to{
+transform:translate(-200px,-200px);
+}
+}
+
+#splash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#020617;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:99999;
+animation:fadeOut 1s ease 2s forwards;
+}
+
+#splash h1{
+font-size:60px;
+margin-bottom:10px;
+}
+
+@keyframes fadeOut{
+to{
+opacity:0;
+visibility:hidden;
+}
+}
+
+#loginPage{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:
+linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.8)),
+url('https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=1600&auto=format&fit=crop');
+background-size:cover;
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
+
+.loginBox{
+width:360px;
+padding:30px;
+background:rgba(255,255,255,0.08);
+border-radius:30px;
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+.loginBox h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+input,
+textarea{
+width:100%;
+padding:16px;
+margin-top:15px;
+border:none;
+outline:none;
+border-radius:18px;
+background:rgba(255,255,255,0.08);
+color:white;
+font-size:15px;
+}
+
+input::placeholder,
+textarea::placeholder{
+color:#ddd;
+}
+
+textarea{
+height:300px;
+resize:none;
+line-height:1.7;
+}
+
+button{
+border:none;
+cursor:pointer;
+transition:0.3s;
+}
+
+.loginBtn,
+.favBtn{
+width:100%;
+padding:15px;
+margin-top:15px;
+border-radius:18px;
+background:linear-gradient(135deg,#00b4db,#0083b0);
+color:white;
+font-weight:600;
+}
+
+.loginBtn:hover,
+.favBtn:hover{
+transform:translateY(-3px);
+}
+
+.app{
+display:flex;
+height:100vh;
+backdrop-filter:blur(20px);
+}
+
+.sidebar{
+width:260px;
+background:rgba(0,0,0,0.35);
+padding:25px;
+display:flex;
+flex-direction:column;
+gap:12px;
+border-right:1px solid rgba(255,255,255,0.08);
+overflow:auto;
+}
+
+.logo{
+font-size:32px;
+font-weight:700;
+text-align:center;
+margin-bottom:20px;
+}
+
+.sidebar button{
+padding:14px;
+border-radius:16px;
+background:rgba(255,255,255,0.08);
+color:white;
+font-size:15px;
+}
+
+.sidebar button:hover{
+background:linear-gradient(135deg,#00b4db,#0083b0);
+transform:translateX(5px);
+}
+
+.main{
+flex:1;
+padding:30px;
+overflow-y:auto;
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+padding-bottom:15px;
+border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.profile{
+background:rgba(255,255,255,0.08);
+padding:12px 18px;
+border-radius:15px;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+padding:25px;
+border-radius:25px;
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
+
+.page{
+display:none;
+}
+
+.show{
+display:block;
+}
+
+.moods{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin:15px 0;
+}
+
+.moods button{
+padding:10px 18px;
+border-radius:50px;
+background:rgba(255,255,255,0.1);
+color:white;
+}
+
+.saveBtn{
+position:fixed;
+right:30px;
+bottom:30px;
+width:70px;
+height:70px;
+border-radius:50%;
+background:linear-gradient(135deg,#00b4db,#0083b0);
+color:white;
+font-size:30px;
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+.counter{
+margin-top:10px;
+font-size:13px;
+text-align:right;
+color:#ddd;
+}
+
+.msg{
+margin-top:10px;
+color:#8eff8e;
+font-weight:500;
+}
+
+.list{
+margin-top:20px;
+max-height:400px;
+overflow:auto;
+}
+
+.item{
+background:rgba(255,255,255,0.08);
+padding:16px;
+border-radius:18px;
+margin-bottom:12px;
+cursor:pointer;
+transition:0.3s;
+}
+
+.item:hover{
+background:rgba(255,255,255,0.15);
+transform:translateY(-3px);
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:15px;
+margin-top:20px;
+}
+
+.stat{
+background:rgba(255,255,255,0.08);
+padding:20px;
+border-radius:20px;
+text-align:center;
+}
+
+.profileImageBox{
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+margin-bottom:20px;
+}
+
+#profilePreview{
+width:130px;
+height:130px;
+border-radius:50%;
+object-fit:cover;
+border:4px solid rgba(255,255,255,0.2);
+cursor:pointer;
+}
+
+.uploadText{
+margin-top:10px;
+font-size:14px;
+color:#ddd;
+}
+
+#photoPreview{
+width:100%;
+border-radius:20px;
+margin-top:20px;
+display:none;
+}
+
+.lightTheme{
+filter:invert(1) hue-rotate(180deg);
+}
+
+@media(max-width:900px){
+
+.app{
+flex-direction:column;
+}
+
+.sidebar{
+width:100%;
+flex-direction:row;
+overflow:auto;
+}
+
+.main{
+padding:20px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="splash">
+<h1>📔 My Diary Pro</h1>
+<p>Secure Personal Journal</p>
+</div>
+
+<div id="loginPage">
+
+<div class="loginBox">
+
+<h1>📔 My Diary</h1>
+
+<input type="text" id="loginName" placeholder="Enter Name">
+
+<input type="password" id="loginPass" placeholder="Password (8+ chars)">
+
+<button class="loginBtn" onclick="login()">Login</button>
+
+</div>
+
+</div>
+
+<div class="app">
+
+<div class="sidebar">
+
+<div class="logo">📔 Diary</div>
+
+<button onclick="openPage('home')">🏠 Home</button>
+
+<button onclick="openPage('saved')">📚 Diaries</button>
+
+<button onclick="openPage('dashboard')">📊 Dashboard</button>
+
+<button onclick="openPage('favorite')">⭐ Favorites</button>
+
+<button onclick="openPage('profile')">👤 Profile</button>
+
+<button onclick="openPage('voice')">🎤 Voice</button>
+
+<button onclick="openPage('photo')">🖼 Photos</button>
+
+<button onclick="toggleTheme()">🌙 Theme</button>
+
+<button onclick="logout()">🚪 Logout</button>
+
+</div>
+
+<div class="main">
+
+<div class="top">
+
+<div>
+<h1>Welcome 👋</h1>
+<p>Your secure digital diary</p>
+</div>
+
+<div class="profile">
+
+<img id="topProfileImg"
+src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+style="width:45px;height:45px;border-radius:50%;object-fit:cover;">
+
+<span id="topUserText">Guest</span>
+
+</div>
+
+</div>
+
+<div id="home" class="page show">
+
+<div class="card">
+
+<input type="date" id="date" onchange="loadDiary()">
+
+<div class="moods">
+
+<button onclick="addMood('😊 Happy')">😊 Happy</button>
+
+<button onclick="addMood('😢 Sad')">😢 Sad</button>
+
+<button onclick="addMood('😍 Love')">😍 Love</button>
+
+<button onclick="addMood('😡 Angry')">😡 Angry</button>
+
+</div>
+
+<textarea id="diary" placeholder="Write your thoughts..."></textarea>
+
+<div class="counter" id="counter">0 Characters</div>
+
+<button class="favBtn" onclick="addFavorite()">⭐ Add Favorite</button>
+
+<div class="msg" id="msg"></div>
+
+</div>
+
+<button class="saveBtn" onclick="saveDiary()">💾</button>
+
+</div>
+
+<div id="saved" class="page">
+
+<div class="card">
+
+<h2>📚 Saved Diaries</h2>
+
+<input type="text" placeholder="Search..." onkeyup="searchDiary(this.value)">
+
+<div class="list" id="diaryList"></div>
+
+</div>
+
+</div>
+
+<div id="dashboard" class="page">
+
+<div class="card">
+
+<h2>📊 Dashboard</h2>
+
+<div class="stats">
+
+<div class="stat">
+<h1 id="totalDiary">0</h1>
+<p>Total Diaries</p>
+</div>
+
+<div class="stat">
+<h1 id="favoriteCount">0</h1>
+<p>Favorites</p>
+</div>
+
+<div class="stat">
+<h1 id="wordCount">0</h1>
+<p>Total Characters</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="favorite" class="page">
+
+<div class="card">
+
+<h2>⭐ Favorite Diaries</h2>
+
+<div class="list" id="favoriteList"></div>
+
+</div>
+
+</div>
+
+<div id="profile" class="page">
+
+<div class="card">
+
+<h2>👤 Edit Profile</h2>
+
+<div class="profileImageBox">
+
+<label for="profilePhotoInput">
+
+<img id="profilePreview"
+src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+
+<div class="uploadText">📷 Change Photo</div>
+
+</label>
+
+<input type="file"
+id="profilePhotoInput"
+accept="image/*"
+onchange="uploadProfilePhoto(event)"
+hidden>
+
+</div>
+
+<input type="text" id="editName" placeholder="New Name">
+
+<input type="password" id="editPass" placeholder="New Password">
+
+<button class="loginBtn" onclick="saveProfile()">Save Profile</button>
+
+</div>
+
+</div>
+
+<div id="voice" class="page">
+
+<div class="card">
+
+<h2>🎤 Voice Diary</h2>
+
+<button class="loginBtn" onclick="startVoice()">Start Voice</button>
+
+</div>
+
+</div>
+
+<div id="photo" class="page">
+
+<div class="card">
+
+<h2>🖼 Photo Diary</h2>
+
+<input type="file" accept="image/*" onchange="uploadPhoto(event)">
+
+<img id="photoPreview">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+if(localStorage.getItem('user')){
+
+document.getElementById('loginPage').style.display='none';
+
+document.getElementById('topUserText').innerText=
+localStorage.getItem('user');
+
+}
+
+document.getElementById('date').value=
+new Date().toISOString().split('T')[0];
+
+function login(){
+
+let name=document.getElementById('loginName').value;
+
+let pass=document.getElementById('loginPass').value;
+
+if(name==='' || pass.length<8){
+
+alert('Enter valid details');
+
+return;
+
+}
+
+localStorage.setItem('user',name);
+
+localStorage.setItem('password',btoa(pass));
+
+document.getElementById('loginPage').style.display='none';
+
+document.getElementById('topUserText').innerText=name;
+
+}
+
+function openPage(id){
+
+document.querySelectorAll('.page').forEach(p=>{
+p.classList.remove('show');
+});
+
+document.getElementById(id).classList.add('show');
+
+if(id==='saved') showList();
+
+if(id==='dashboard') loadDashboard();
+
+if(id==='favorite') loadFavorites();
+
+}
+
+function diaryKey(){
+
+return 'diary_'+
+localStorage.getItem('user')+'_'
++document.getElementById('date').value;
+
+}
+
+function saveDiary(){
+
+let txt=document.getElementById('diary').value;
+
+if(txt===''){
+
+showMsg('Write something');
+
+return;
+
+}
+
+localStorage.setItem(
+diaryKey(),
+btoa(unescape(encodeURIComponent(txt)))
+);
+
+showMsg('Diary Saved ✅');
+
+showList();
+
+}
+
+function loadDiary(){
+
+let data=localStorage.getItem(diaryKey());
+
+document.getElementById('diary').value=
+data
+?decodeURIComponent(escape(atob(data)))
+:'';
+
+updateCounter();
+
+}
+
+function updateCounter(){
+
+document.getElementById('counter').innerText=
+document.getElementById('diary').value.length+
+' Characters';
+
+}
+
+document.getElementById('diary')
+.addEventListener('input',updateCounter);
+
+function showMsg(t){
+
+document.getElementById('msg').innerText=t;
+
+setTimeout(()=>{
+document.getElementById('msg').innerText='';
+},2000);
+
+}
+
+function showList(){
+
+let list=document.getElementById('diaryList');
+
+list.innerHTML='';
+
+Object.keys(localStorage)
+.filter(k=>k.startsWith('diary_'+localStorage.getItem('user')))
+.sort()
+.reverse()
+.forEach(k=>{
+
+let d=k.split('_')[2];
+
+list.innerHTML+=`
+<div class="item" onclick="openDiary('${d}')">
+📅 ${d}
+</div>
+`;
+
+});
+
+}
+
+function openDiary(d){
+
+openPage('home');
+
+document.getElementById('date').value=d;
+
+loadDiary();
+
+}
+
+function searchDiary(txt){
+
+let list=document.getElementById('diaryList');
+
+list.innerHTML='';
+
+Object.keys(localStorage).forEach(k=>{
+
+if(k.startsWith('diary_'+localStorage.getItem('user'))){
+
+let data=
+decodeURIComponent(
+escape(atob(localStorage.getItem(k)))
+);
+
+if(data.toLowerCase().includes(txt.toLowerCase())){
+
+let d=k.split('_')[2];
+
+list.innerHTML+=`
+<div class="item" onclick="openDiary('${d}')">
+📅 ${d}
+</div>
+`;
+
+}
+
+}
+
+});
+
+}
+
+function addFavorite(){
+
+localStorage.setItem(
+'fav_'+diaryKey(),
+document.getElementById('diary').value
+);
+
+showMsg('Added to Favorites ⭐');
+
+loadFavorites();
+
+}
+
+function loadFavorites(){
+
+let list=document.getElementById('favoriteList');
+
+list.innerHTML='';
+
+Object.keys(localStorage).forEach(k=>{
+
+if(k.startsWith('fav_diary_')){
+
+list.innerHTML+=`
+<div class="item">
+⭐ ${k.replace('fav_diary_','')}
+</div>
+`;
+
+}
+
+});
+
+}
+
+function loadDashboard(){
+
+let diaries=
+Object.keys(localStorage)
+.filter(k=>k.startsWith('diary_'+localStorage.getItem('user')));
+
+document.getElementById('totalDiary').innerText=
+diaries.length;
+
+document.getElementById('favoriteCount').innerText=
+Object.keys(localStorage)
+.filter(k=>k.startsWith('fav_diary_')).length;
+
+let chars=0;
+
+diaries.forEach(k=>{
+chars+=atob(localStorage.getItem(k)).length;
+});
+
+document.getElementById('wordCount').innerText=
+chars;
+
+}
+
+function saveProfile(){
+
+let n=document.getElementById('editName').value;
+
+let p=document.getElementById('editPass').value;
+
+if(n!==''){
+
+localStorage.setItem('user',n);
+
+document.getElementById('topUserText').innerText=n;
+
+}
+
+if(p.length>=8){
+
+localStorage.setItem('password',btoa(p));
+
+}
+
+alert('Profile Updated ✅');
+
+}
+
+function uploadProfilePhoto(event){
+
+let file=event.target.files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(){
+
+localStorage.setItem('profilePhoto',reader.result);
+
+document.getElementById('profilePreview').src=reader.result;
+
+document.getElementById('topProfileImg').src=reader.result;
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+window.onload=function(){
+
+let savedPhoto=localStorage.getItem('profilePhoto');
+
+if(savedPhoto){
+
+document.getElementById('profilePreview').src=savedPhoto;
+
+document.getElementById('topProfileImg').src=savedPhoto;
+
+}
+
+if(localStorage.getItem('user')){
+
+document.getElementById('topUserText').innerText=
+localStorage.getItem('user');
+
+}
+
+}
+
+function addMood(m){
+
+document.getElementById('diary').value+=
+'\n'+m+'\n';
+
+updateCounter();
+
+}
+
+function startVoice(){
+
+if(!('webkitSpeechRecognition' in window)){
+
+alert('Voice not supported');
+
+return;
+
+}
+
+let recognition=new webkitSpeechRecognition();
+
+recognition.lang='en-US';
+
+recognition.start();
+
+recognition.onresult=function(event){
+
+document.getElementById('diary').value+=
+' '+event.results[0][0].transcript;
+
+updateCounter();
+
+openPage('home');
+
+}
+
+}
+
+function uploadPhoto(event){
+
+let file=event.target.files[0];
+
+if(!file) return;
+
+let reader=new FileReader();
+
+reader.onload=function(){
+
+let img=document.getElementById('photoPreview');
+
+img.src=reader.result;
+
+img.style.display='block';
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+function toggleTheme(){
+
+document.body.classList.toggle('lightTheme');
+
+}
+
+function logout(){
+
+localStorage.clear();
+
+location.reload();
+
+}
+
+setInterval(()=>{
+
+let txt=document.getElementById('diary').value;
+
+if(txt!==''){
+
+localStorage.setItem(
+diaryKey(),
+btoa(unescape(encodeURIComponent(txt)))
+);
+
+}
+
+},4000);
+
+loadDiary();
+
+</script>
+
+</body>
+</html>
