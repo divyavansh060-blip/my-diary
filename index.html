@@ -38,7 +38,7 @@ scroll-behavior:smooth;
 body{
 background:var(--dark);
 color:white;
-overflow:hidden;
+overflow-y:auto;
 position:relative;
 }
 
@@ -280,12 +280,23 @@ flex-wrap:wrap;
 }
 
 .toolbar button{
-width:50px;
-height:50px;
-border-radius:12px;
-background:rgba(255,255,255,0.1);
+
+width:55px;
+height:55px;
+border-radius:14px;
+background:rgba(255,255,255,0.12);
 color:white;
 font-size:18px;
+font-weight:600;
+border:1px solid rgba(255,255,255,0.1);
+
+}
+
+.toolbar button:hover{
+
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+transform:translateY(-3px);
+
 }
 
 #editor{
@@ -574,16 +585,31 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 <div class="toolbar">
 
+<div class="toolbar">
+
 <button onclick="format('bold')"><b>B</b></button>
 <button onclick="format('italic')"><i>I</i></button>
 <button onclick="format('underline')"><u>U</u></button>
+<button onclick="format('strikeThrough')"><s>S</s></button>
 <button onclick="format('insertUnorderedList')">•</button>
+<button onclick="format('insertOrderedList')">1.</button>
+<button onclick="format('justifyLeft')">⬅</button>
+<button onclick="format('justifyCenter')">⬍</button>
+<button onclick="format('justifyRight')">➡</button>
+<button onclick="format('undo')">↩</button>
+<button onclick="format('redo')">↪</button>
+<button onclick="addLink()">🔗</button>
+<button onclick="changeColor()">🎨</button>
+<button onclick="decreaseFontSize()">A</button>
+<button onclick="increaseFontSize()">A+</button>
+<button onclick="clearEditor()">🗑</button>
+</div>
 
 </div>
 
 <div id="editor" contenteditable="true"></div>
 
-<div class="counter" id="counter">0 Characters</div>
+<div class="counter" id="counter"> 0 Characters</div>
 
 <button class="actionBtn" onclick="addFavorite()">⭐ Add Favorite</button>
 
@@ -739,6 +765,16 @@ hidden>
 
 <script>
 
+document.addEventListener('keypress',function(e){
+
+if(e.key==='Enter' &&
+document.getElementById('loginPage').style.display!=='none'){
+
+login();
+
+}
+
+});
 const editor = document.getElementById('editor');
 
 if(localStorage.getItem('user')){
@@ -800,12 +836,11 @@ return 'diary_'+localStorage.getItem('user')+'_'+document.getElementById('date')
 
 function saveDiary(){
 
-let txt=editor.innerHTML;
+let txt=editor.innerHTML.trim();
 
-if(txt.trim()===''){
+if(txt==='' || txt==='<br>'){
 
 showMsg('Write something first');
-
 return;
 
 }
@@ -819,20 +854,26 @@ showMsg('Diary Saved ✅');
 
 showList();
 
-// textarea clear
-editor.innerHTML='';
-
 updateCounter();
 
 }
+
 function loadDiary(){
 
 let data=localStorage.getItem(diaryKey());
+
+try{
 
 editor.innerHTML=
 data
 ?decodeURIComponent(escape(atob(data)))
 :'';
+
+}catch{
+
+editor.innerHTML='';
+
+}
 
 updateCounter();
 
@@ -927,7 +968,11 @@ decodeURIComponent(
 escape(atob(localStorage.getItem(key)))
 );
 
-if(data.toLowerCase().includes(text.toLowerCase())){
+if(
+data.replace(/<[^>]*>/g,'')
+.toLowerCase()
+.includes(text.toLowerCase())
+){
 
 let date=key.split('_')[2];
 
@@ -947,10 +992,16 @@ list.innerHTML+=`
 
 function addFavorite(){
 
-localStorage.setItem(
-'fav_'+diaryKey(),
-editor.innerHTML
-);
+let key='fav_'+diaryKey();
+
+if(localStorage.getItem(key)){
+
+showMsg('Already Favorite ⭐');
+return;
+
+}
+
+localStorage.setItem(key,editor.innerHTML);
 
 showMsg('Added To Favorites ⭐');
 
@@ -990,7 +1041,8 @@ document.getElementById('totalDiary').innerText=diaries.length;
 
 document.getElementById('favoriteCount').innerText=
 Object.keys(localStorage)
-.filter(key=>key.startsWith('fav_diary_')).length;
+.filter(key=>key.startsWith('fav_diary_'+localStorage.getItem('user')))
+.length;
 
 let chars=0;
 
@@ -1051,6 +1103,14 @@ reader.readAsDataURL(file);
 }
 
 window.onload=function(){
+
+    let savedTheme=localStorage.getItem('theme');
+
+if(savedTheme==='light'){
+
+document.body.classList.add('lightTheme');
+
+}
 
 let savedPhoto=localStorage.getItem('profilePhoto');
 
@@ -1135,6 +1195,16 @@ function toggleTheme(){
 
 document.body.classList.toggle('lightTheme');
 
+if(document.body.classList.contains('lightTheme')){
+
+localStorage.setItem('theme','light');
+
+}else{
+
+localStorage.setItem('theme','dark');
+
+}
+
 }
 
 function logout(){
@@ -1149,9 +1219,9 @@ location.reload();
 
 setInterval(()=>{
 
-let txt=editor.innerHTML;
+let txt=editor.innerHTML.trim();
 
-if(txt!==''){
+if(txt!=='' && txt!=='<br>'){
 
 localStorage.setItem(
 diaryKey(),
@@ -1175,6 +1245,12 @@ let files=event.target.files;
 let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
 
 Array.from(files).forEach(file=>{
+    if(file.size > 2000000){
+
+alert("Image too large");
+return;
+
+}
 
 let reader=new FileReader();
 
@@ -1277,11 +1353,20 @@ suggestions[Math.floor(Math.random()*suggestions.length)];
 
 function deleteDiary(key){
 
-localStorage.setItem("trash_"+key,localStorage.getItem(key));
+if(confirm("Delete this diary?")){
+
+localStorage.setItem(
+"trash_"+key,
+localStorage.getItem(key)
+);
 
 localStorage.removeItem(key);
 
+showMsg("Diary Deleted 🗑");
+
 showList();
+
+}
 
 }
 
@@ -1307,16 +1392,56 @@ Object.keys(localStorage)
 .filter(key=>key.startsWith("trash_diary_"))
 .forEach(key=>{
 
+let originalKey = key.replace("trash_","");
+
 list.innerHTML+=`
 <div class="item">
 
-🗑 ${key.replace("trash_","")}
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+flex-wrap:wrap;
+">
 
-<div style="margin-top:10px;">
+<div style="font-weight:600;flex:1;">
+🗑 ${originalKey}
+</div>
 
-<button onclick="restoreDiary('${key.replace("trash_","")}')">
-Restore
+<div style="display:flex;gap:8px;">
+
+<button 
+onclick="restoreDiary('${originalKey}')"
+style="
+width:auto;
+padding:7px 14px;
+border:none;
+border-radius:10px;
+background:#22c55e;
+color:white;
+font-size:12px;
+cursor:pointer;
+">
+↩ Restore
 </button>
+
+<button 
+onclick="permanentDelete('${key}')"
+style="
+width:auto;
+padding:7px 14px;
+border:none;
+border-radius:10px;
+background:#ef4444;
+color:white;
+font-size:12px;
+cursor:pointer;
+">
+🗑 Delete
+</button>
+
+</div>
 
 </div>
 
@@ -1327,9 +1452,32 @@ Restore
 
 }
 
+function permanentDelete(key){
+
+if(confirm("Delete permanently?")){
+
+localStorage.removeItem(key);
+
+loadTrash();
+
+showMsg("Permanently Deleted ❌");
+
+}
+
+}
+
 function pinDiary(){
 
-localStorage.setItem("pin_"+diaryKey(),"true");
+let key="pin_"+diaryKey();
+
+if(localStorage.getItem(key)){
+
+showMsg("Already Pinned 📌");
+return;
+
+}
+
+localStorage.setItem(key,"true");
 
 showMsg("Diary Pinned 📌");
 
@@ -1399,19 +1547,31 @@ function importData(event){
 
 let file=event.target.files[0];
 
+if(!file) return;
+
 let reader=new FileReader();
 
 reader.onload=function(){
 
+try{
+
 let data=JSON.parse(reader.result);
 
 Object.keys(data).forEach(key=>{
+
 localStorage.setItem(key,data[key]);
+
 });
 
 alert("Backup Restored ✅");
 
 location.reload();
+
+}catch{
+
+alert("Invalid Backup File");
+
+}
 
 };
 
@@ -1419,6 +1579,84 @@ reader.readAsText(file);
 
 }
 
+function format(command){
+
+editor.focus();
+
+document.execCommand(command,false,null);
+
+updateCounter();
+
+}
+
+function addLink(){
+
+let url=prompt("Enter URL");
+
+if(url){
+
+document.execCommand('createLink',false,url);
+
+}
+
+}
+
+function changeColor(){
+
+editor.focus();
+
+let color=prompt("Enter color name or hex code");
+
+if(color){
+
+document.execCommand('styleWithCSS', false, true);
+
+document.execCommand('foreColor', false, color);
+
+}
+
+}
+
+function clearEditor(){
+
+if(confirm("Clear editor?")){
+
+editor.innerHTML='';
+
+updateCounter();
+
+}
+
+}
+let currentFontSize = 3;
+
+function increaseFontSize(){
+
+if(currentFontSize < 7){
+
+currentFontSize++;
+
+editor.focus();
+
+document.execCommand('fontSize', false, currentFontSize);
+
+}
+
+}
+
+function decreaseFontSize(){
+
+if(currentFontSize > 1){
+
+currentFontSize--;
+
+editor.focus();
+
+document.execCommand('fontSize', false, currentFontSize);
+
+}
+
+}
 </script>
 
 </body>
