@@ -482,7 +482,7 @@ align-items:flex-start;
 
 <div id="splash">
 <h1>📔</h1>
-<h2>My Diary Pro</h2>
+<h2>My Diary </h2>
 <p>Secure Personal Journal</p>
 </div>
 
@@ -520,12 +520,14 @@ align-items:flex-start;
 <button onclick="toggleMusic()">🎵 Music</button>
 <button onclick="exportData()">⬇ Export Backup</button>
 
-<input type="file" onchange="importData(event)">
+<label class="actionBtn" style="text-align:center;cursor:pointer;">
+⬆ Import Backup
+<input type="file" onchange="importData(event)" hidden>
+</label>
 
 <button onclick="logout()">🚪 Logout</button>
 
 </div>
-
 <div class="main">
 
 <div class="top">
@@ -817,8 +819,12 @@ showMsg('Diary Saved ✅');
 
 showList();
 
-}
+// textarea clear
+editor.innerHTML='';
 
+updateCounter();
+
+}
 function loadDiary(){
 
 let data=localStorage.getItem(diaryKey());
@@ -1194,9 +1200,63 @@ let box=document.getElementById("photoGallery");
 
 let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
 
-box.innerHTML=arr.map(img=>`
-<img src="${img}">
-`).join("");
+box.innerHTML='';
+
+arr.forEach((img,index)=>{
+
+box.innerHTML+=`
+<div style="position:relative;width:90px;height:90px;">
+
+<img 
+src="${img}"
+style="
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:14px;
+border:2px solid rgba(255,255,255,0.15);
+">
+
+<button 
+onclick="deletePhoto(${index})"
+style="
+position:absolute;
+top:-8px;
+right:-8px;
+width:24px;
+height:24px;
+border:none;
+border-radius:50%;
+background:#ef4444;
+color:white;
+font-size:14px;
+font-weight:bold;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+">
+✕
+</button>
+
+</div>
+`;
+
+});
+
+}
+
+function deletePhoto(index){
+
+let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
+
+arr.splice(index,1);
+
+localStorage.setItem(photoKey(),JSON.stringify(arr));
+
+renderPhotos();
+
+showMsg("Photo Deleted 🗑");
 
 }
 
