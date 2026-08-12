@@ -1,21 +1,25 @@
 {
-  "name": "My Diary Pro",
-  "short_name": "Diary",
+  "name": "My Diary",
+  "short_name": "My Diary",
+  "description": "Secure Personal Digital Journal",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#00b4db",
   "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#00b4db",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "./icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "./icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
