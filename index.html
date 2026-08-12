@@ -185,6 +185,11 @@ flex-direction:column;
 gap:12px;
 overflow:auto;
 border-right:1px solid var(--border);
+ <button id="installBtn" onclick="installApp()" style="display:none;">
+    📲 Install App
+</button>
+
+<button onclick="toggleTheme()">🌙 Theme</button>
 }
 
 .logo{
@@ -2499,6 +2504,67 @@ savedVolume;
 music.volume=0.8;
 
 }
+ /* ================= PWA INSTALL ================= */
+
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (e) => {
+
+    e.preventDefault();
+
+    deferredPrompt = e;
+
+    const installBtn = document.getElementById("installBtn");
+
+    if (installBtn) {
+        installBtn.style.display = "block";
+    }
+
+});
+
+
+async function installApp() {
+
+    if (!deferredPrompt) {
+
+        alert(
+            "Install option is not available yet.\n\n" +
+            "Please open My Diary using Chrome/Edge on HTTPS or localhost."
+        );
+
+        return;
+    }
+
+    deferredPrompt.prompt();
+
+    const { outcome } = await deferredPrompt.userChoice;
+
+    console.log("Install result:", outcome);
+
+    deferredPrompt = null;
+
+    const installBtn = document.getElementById("installBtn");
+
+    if (installBtn) {
+        installBtn.style.display = "none";
+    }
+
+}
+
+
+/* App already installed */
+
+window.addEventListener("appinstalled", () => {
+
+    console.log("My Diary installed successfully ✅");
+
+    const installBtn = document.getElementById("installBtn");
+
+    if (installBtn) {
+        installBtn.style.display = "none";
+    }
+
+});
 
 </script>
 <!-- PWA INSTALL BUTTON -->
