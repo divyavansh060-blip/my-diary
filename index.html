@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Diary </title>
+<title>My Diary</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -47,20 +47,15 @@ content:'';
 position:fixed;
 width:200%;
 height:200%;
-background:
-radial-gradient(circle,#00b4db22 1px,transparent 1px);
+background:radial-gradient(circle,#00b4db22 1px,transparent 1px);
 background-size:40px 40px;
 animation:bgMove 25s linear infinite;
 z-index:-1;
 }
 
 @keyframes bgMove{
-from{
-transform:translate(0,0);
-}
-to{
-transform:translate(-200px,-200px);
-}
+from{transform:translate(0,0);}
+to{transform:translate(-200px,-200px);}
 }
 
 #splash{
@@ -280,7 +275,6 @@ flex-wrap:wrap;
 }
 
 .toolbar button{
-
 width:55px;
 height:55px;
 border-radius:14px;
@@ -289,14 +283,11 @@ color:white;
 font-size:18px;
 font-weight:600;
 border:1px solid rgba(255,255,255,0.1);
-
 }
 
 .toolbar button:hover{
-
 background:linear-gradient(135deg,var(--primary),var(--secondary));
 transform:translateY(-3px);
-
 }
 
 #editor{
@@ -452,6 +443,139 @@ background:#e2e8f0;
 color:black;
 }
 
+/* ================= MUSIC PLAYER ================= */
+
+.musicPlayer{
+margin-top:20px;
+background:rgba(0,0,0,0.25);
+border:1px solid rgba(255,255,255,0.12);
+border-radius:24px;
+padding:20px;
+}
+
+.musicTitle{
+font-size:22px;
+font-weight:600;
+margin-bottom:5px;
+}
+
+.musicNow{
+font-size:14px;
+color:#b9eefa;
+margin-bottom:15px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+.musicControls{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+margin:15px 0;
+}
+
+.musicControls button{
+width:50px;
+height:50px;
+border-radius:50%;
+background:rgba(255,255,255,0.1);
+color:white;
+font-size:18px;
+}
+
+.musicControls button:hover{
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+transform:scale(1.08);
+}
+
+.musicControls .playBtn{
+width:60px;
+height:60px;
+font-size:23px;
+}
+
+.musicVolume{
+width:100%;
+margin:10px 0;
+}
+
+.musicAdd{
+display:flex;
+gap:10px;
+align-items:center;
+margin-top:15px;
+}
+
+.musicAdd label{
+flex:1;
+padding:13px;
+border-radius:15px;
+background:linear-gradient(135deg,var(--primary),var(--secondary));
+text-align:center;
+cursor:pointer;
+font-weight:600;
+}
+
+.musicAdd input{
+display:none;
+}
+
+.songList{
+margin-top:15px;
+max-height:220px;
+overflow-y:auto;
+}
+
+.songItem{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:12px;
+margin-bottom:8px;
+border-radius:14px;
+background:rgba(255,255,255,0.07);
+}
+
+.songItem.active{
+background:linear-gradient(135deg,#00b4db55,#0083b055);
+border:1px solid rgba(0,180,219,0.4);
+}
+
+.songName{
+flex:1;
+font-size:14px;
+overflow:hidden;
+white-space:nowrap;
+text-overflow:ellipsis;
+cursor:pointer;
+}
+
+.songDelete{
+width:35px !important;
+height:35px;
+padding:0 !important;
+border-radius:10px !important;
+background:#ef4444 !important;
+color:white !important;
+font-size:15px !important;
+}
+
+.musicProgress{
+width:100%;
+cursor:pointer;
+}
+
+.musicTime{
+display:flex;
+justify-content:space-between;
+font-size:12px;
+color:#ccc;
+margin-top:4px;
+}
+
 ::-webkit-scrollbar{
 width:8px;
 height:8px;
@@ -493,7 +617,7 @@ align-items:flex-start;
 
 <div id="splash">
 <h1>📔</h1>
-<h2>My Diary </h2>
+<h2>My Diary</h2>
 <p>Secure Personal Journal</p>
 </div>
 
@@ -528,7 +652,7 @@ align-items:flex-start;
 <button onclick="openPage('voice')">🎤 Voice</button>
 <button onclick="openPage('photo')">🖼 Photos</button>
 <button onclick="toggleTheme()">🌙 Theme</button>
-<button onclick="toggleMusic()">🎵 Music</button>
+<button onclick="openPage('music')">🎵 Music</button>
 <button onclick="exportData()">⬇ Export Backup</button>
 
 <label class="actionBtn" style="text-align:center;cursor:pointer;">
@@ -539,6 +663,7 @@ align-items:flex-start;
 <button onclick="logout()">🚪 Logout</button>
 
 </div>
+
 <div class="main">
 
 <div class="top">
@@ -560,15 +685,23 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 </div>
 
+<!-- HOME -->
+
 <div id="home" class="page show">
 
 <div class="card">
 
 <input type="date" id="date" onchange="loadDiary()">
 
-<input type="file" id="multiPhotos" accept="image/*" multiple onchange="addPhotos(event)">
+<input type="file"
+id="multiPhotos"
+accept="image/*"
+multiple
+onchange="addPhotos(event)">
 
-<div id="photoGallery" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;"></div>
+<div id="photoGallery"
+style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+</div>
 
 <div class="moods">
 
@@ -579,11 +712,11 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 </div>
 
-<button class="actionBtn" onclick="suggestDiary()">💡 Suggest Idea</button>
+<button class="actionBtn" onclick="suggestDiary()">
+💡 Suggest Idea
+</button>
 
 <div id="suggestBox" style="margin-top:12px;"></div>
-
-<div class="toolbar">
 
 <div class="toolbar">
 
@@ -600,20 +733,27 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 <button onclick="format('redo')">↪</button>
 <button onclick="addLink()">🔗</button>
 <button onclick="changeColor()">🎨</button>
+
 <button onclick="decreaseFontSize()">A</button>
 <button onclick="increaseFontSize()">A+</button>
+
 <button onclick="clearEditor()">🗑</button>
-</div>
 
 </div>
 
 <div id="editor" contenteditable="true"></div>
 
-<div class="counter" id="counter"> 0 Characters</div>
+<div class="counter" id="counter">
+0 Characters
+</div>
 
-<button class="actionBtn" onclick="addFavorite()">⭐ Add Favorite</button>
+<button class="actionBtn" onclick="addFavorite()">
+⭐ Add Favorite
+</button>
 
-<button class="actionBtn" onclick="pinDiary()">📌 Pin Diary</button>
+<button class="actionBtn" onclick="pinDiary()">
+📌 Pin Diary
+</button>
 
 <div class="msg" id="msg"></div>
 
@@ -623,19 +763,25 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 </div>
 
+<!-- SAVED -->
+
 <div id="saved" class="page">
 
 <div class="card">
 
 <h2>📚 Saved Diaries</h2>
 
-<input type="text" placeholder="Search Diaries..." onkeyup="searchDiary(this.value)">
+<input type="text"
+placeholder="Search Diaries..."
+onkeyup="searchDiary(this.value)">
 
 <div class="list" id="diaryList"></div>
 
 </div>
 
 </div>
+
+<!-- DASHBOARD -->
 
 <div id="dashboard" class="page">
 
@@ -670,6 +816,8 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 </div>
 
+<!-- FAVORITE -->
+
 <div id="favorite" class="page">
 
 <div class="card">
@@ -682,6 +830,8 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 
 </div>
 
+<!-- TRASH -->
+
 <div id="trash" class="page">
 
 <div class="card">
@@ -693,6 +843,8 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 </div>
 
 </div>
+
+<!-- PROFILE -->
 
 <div id="profile" class="page">
 
@@ -707,7 +859,9 @@ style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
 <img id="profilePreview"
 src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
 
-<div class="uploadText">📷 Change Photo</div>
+<div class="uploadText">
+📷 Change Photo
+</div>
 
 </label>
 
@@ -719,15 +873,23 @@ hidden>
 
 </div>
 
-<input type="text" id="editName" placeholder="New Name">
+<input type="text"
+id="editName"
+placeholder="New Name">
 
-<input type="password" id="editPass" placeholder="New Password">
+<input type="password"
+id="editPass"
+placeholder="New Password">
 
-<button class="loginBtn" onclick="saveProfile()">Save Profile</button>
+<button class="loginBtn" onclick="saveProfile()">
+Save Profile
+</button>
 
 </div>
 
 </div>
+
+<!-- VOICE -->
 
 <div id="voice" class="page">
 
@@ -735,11 +897,15 @@ hidden>
 
 <h2>🎤 Voice Diary</h2>
 
-<button class="loginBtn" onclick="startVoice()">Start Voice Typing</button>
+<button class="loginBtn" onclick="startVoice()">
+Start Voice Typing
+</button>
 
 </div>
 
 </div>
+
+<!-- PHOTO -->
 
 <div id="photo" class="page">
 
@@ -747,7 +913,9 @@ hidden>
 
 <h2>🖼 Photo Diary</h2>
 
-<input type="file" accept="image/*" onchange="uploadPhoto(event)">
+<input type="file"
+accept="image/*"
+onchange="uploadPhoto(event)">
 
 <img id="photoPreview">
 
@@ -755,15 +923,104 @@ hidden>
 
 </div>
 
+<!-- ================= MUSIC PAGE ================= -->
+
+<div id="music" class="page">
+
+<div class="card">
+
+<h2>🎵 My Music</h2>
+
+<div class="musicPlayer">
+
+<div class="musicTitle">
+🎧 Music Player
+</div>
+
+<div class="musicNow" id="musicNow">
+No song selected
+</div>
+
+<audio id="bgMusic"></audio>
+
+<input
+type="range"
+id="musicProgress"
+class="musicProgress"
+min="0"
+max="100"
+value="0"
+oninput="seekMusic(this.value)"
+>
+
+<div class="musicTime">
+<span id="currentTime">0:00</span>
+<span id="duration">0:00</span>
+</div>
+
+<div class="musicControls">
+
+<button onclick="previousSong()">⏮</button>
+
+<button
+class="playBtn"
+id="musicPlayBtn"
+onclick="toggleMusic()">
+▶️
+</button>
+
+<button onclick="nextSong()">⏭</button>
+
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;">
+
+<span>🔊</span>
+
+<input
+type="range"
+id="musicVolume"
+class="musicVolume"
+min="0"
+max="1"
+step="0.01"
+value="0.8"
+oninput="changeVolume(this.value)"
+>
+
+</div>
+
+<div class="musicAdd">
+
+<label for="songInput">
+➕ Add Song
+</label>
+
+<input
+type="file"
+id="songInput"
+accept="audio/*"
+multiple
+onchange="addSongs(event)"
+>
+
+</div>
+
+<div class="songList" id="songList"></div>
+
+</div>
+
 </div>
 
 </div>
 
-<audio id="bgMusic" loop>
-<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a0.mp3" type="audio/mp3">
-</audio>
+</div>
+
+</div>
 
 <script>
+
+/* ================= BASIC ================= */
 
 document.addEventListener('keypress',function(e){
 
@@ -775,7 +1032,8 @@ login();
 }
 
 });
-const editor = document.getElementById('editor');
+
+const editor=document.getElementById('editor');
 
 if(localStorage.getItem('user')){
 
@@ -788,6 +1046,9 @@ localStorage.getItem('user');
 
 document.getElementById('date').value=
 new Date().toISOString().split('T')[0];
+
+
+/* ================= LOGIN ================= */
 
 function login(){
 
@@ -813,6 +1074,9 @@ document.getElementById('topUserText').innerText=name;
 
 }
 
+
+/* ================= PAGE ================= */
+
 function openPage(id){
 
 document.querySelectorAll('.page').forEach(page=>{
@@ -822,15 +1086,25 @@ page.classList.remove('show');
 document.getElementById(id).classList.add('show');
 
 if(id==='saved') showList();
+
 if(id==='dashboard') loadDashboard();
+
 if(id==='favorite') loadFavorites();
+
 if(id==='trash') loadTrash();
+
+if(id==='music') loadSongs();
 
 }
 
+
+/* ================= DIARY ================= */
+
 function diaryKey(){
 
-return 'diary_'+localStorage.getItem('user')+'_'+document.getElementById('date').value;
+return 'diary_'+
+localStorage.getItem('user')+'_'
++document.getElementById('date').value;
 
 }
 
@@ -841,6 +1115,7 @@ let txt=editor.innerHTML.trim();
 if(txt==='' || txt==='<br>'){
 
 showMsg('Write something first');
+
 return;
 
 }
@@ -900,6 +1175,9 @@ document.getElementById('msg').innerText='';
 
 }
 
+
+/* ================= SAVED ================= */
+
 function showList(){
 
 let list=document.getElementById('diaryList');
@@ -907,21 +1185,28 @@ let list=document.getElementById('diaryList');
 list.innerHTML='';
 
 Object.keys(localStorage)
-.filter(key=>key.startsWith('diary_'+localStorage.getItem('user')))
+.filter(key=>
+key.startsWith('diary_'+localStorage.getItem('user'))
+)
 .reverse()
 .forEach(key=>{
 
 let date=key.split('_')[2];
 
 list.innerHTML+=`
-<div class="item" style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
 
-<div onclick="openDiary('${date}')" 
+<div class="item"
+style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+
+<div
+onclick="openDiary('${date}')"
 style="cursor:pointer;font-weight:600;flex:1;">
+
 📚 ${date}
+
 </div>
 
-<button 
+<button
 onclick="deleteDiary('${key}')"
 style="
 width:auto;
@@ -933,10 +1218,13 @@ color:white;
 font-size:13px;
 cursor:pointer;
 ">
+
 🗑 Delete
+
 </button>
 
 </div>
+
 `;
 
 });
@@ -977,9 +1265,14 @@ data.replace(/<[^>]*>/g,'')
 let date=key.split('_')[2];
 
 list.innerHTML+=`
-<div class="item" onclick="openDiary('${date}')">
+
+<div class="item"
+onclick="openDiary('${date}')">
+
 📅 ${date}
+
 </div>
+
 `;
 
 }
@@ -990,6 +1283,9 @@ list.innerHTML+=`
 
 }
 
+
+/* ================= FAVORITE ================= */
+
 function addFavorite(){
 
 let key='fav_'+diaryKey();
@@ -997,6 +1293,7 @@ let key='fav_'+diaryKey();
 if(localStorage.getItem(key)){
 
 showMsg('Already Favorite ⭐');
+
 return;
 
 }
@@ -1017,12 +1314,18 @@ list.innerHTML='';
 
 Object.keys(localStorage).forEach(key=>{
 
-if(key.startsWith('fav_diary_'+localStorage.getItem('user'))){
+if(key.startsWith(
+'fav_diary_'+localStorage.getItem('user')
+)){
 
 list.innerHTML+=`
+
 <div class="item">
+
 ⭐ ${key.replace('fav_diary_','')}
+
 </div>
+
 `;
 
 }
@@ -1031,23 +1334,38 @@ list.innerHTML+=`
 
 }
 
+
+/* ================= DASHBOARD ================= */
+
 function loadDashboard(){
 
 let diaries=
 Object.keys(localStorage)
-.filter(key=>key.startsWith('diary_'+localStorage.getItem('user')));
+.filter(key=>
+key.startsWith('diary_'+localStorage.getItem('user'))
+);
 
-document.getElementById('totalDiary').innerText=diaries.length;
+document.getElementById('totalDiary').innerText=
+diaries.length;
 
 document.getElementById('favoriteCount').innerText=
 Object.keys(localStorage)
-.filter(key=>key.startsWith('fav_diary_'+localStorage.getItem('user')))
+.filter(key=>
+key.startsWith(
+'fav_diary_'+localStorage.getItem('user')
+)
+)
 .length;
 
 let chars=0;
 
 diaries.forEach(key=>{
-chars+=decodeURIComponent(escape(atob(localStorage.getItem(key)))).length;
+
+chars+=
+decodeURIComponent(
+escape(atob(localStorage.getItem(key)))
+).length;
+
 });
 
 document.getElementById('wordCount').innerText=chars;
@@ -1056,23 +1374,32 @@ renderCalendar();
 
 }
 
+
+/* ================= PROFILE ================= */
+
 function saveProfile(){
 
-let newName=document.getElementById('editName').value;
+let newName=
+document.getElementById('editName').value;
 
-let newPass=document.getElementById('editPass').value;
+let newPass=
+document.getElementById('editPass').value;
 
 if(newName!==''){
 
 localStorage.setItem('user',newName);
 
-document.getElementById('topUserText').innerText=newName;
+document.getElementById('topUserText').innerText=
+newName;
 
 }
 
 if(newPass.length>=8){
 
-localStorage.setItem('password',btoa(newPass));
+localStorage.setItem(
+'password',
+btoa(newPass)
+);
 
 }
 
@@ -1084,17 +1411,22 @@ function uploadProfilePhoto(event){
 
 let file=event.target.files[0];
 
-if(!file) return;
+if(!file)return;
 
 let reader=new FileReader();
 
 reader.onload=function(){
 
-localStorage.setItem('profilePhoto',reader.result);
+localStorage.setItem(
+'profilePhoto',
+reader.result
+);
 
-document.getElementById('profilePreview').src=reader.result;
+document.getElementById('profilePreview').src=
+reader.result;
 
-document.getElementById('topProfileImg').src=reader.result;
+document.getElementById('topProfileImg').src=
+reader.result;
 
 };
 
@@ -1102,9 +1434,13 @@ reader.readAsDataURL(file);
 
 }
 
+
+/* ================= ONLOAD ================= */
+
 window.onload=function(){
 
-    let savedTheme=localStorage.getItem('theme');
+let savedTheme=
+localStorage.getItem('theme');
 
 if(savedTheme==='light'){
 
@@ -1112,13 +1448,16 @@ document.body.classList.add('lightTheme');
 
 }
 
-let savedPhoto=localStorage.getItem('profilePhoto');
+let savedPhoto=
+localStorage.getItem('profilePhoto');
 
 if(savedPhoto){
 
-document.getElementById('profilePreview').src=savedPhoto;
+document.getElementById('profilePreview').src=
+savedPhoto;
 
-document.getElementById('topProfileImg').src=savedPhoto;
+document.getElementById('topProfileImg').src=
+savedPhoto;
 
 }
 
@@ -1131,15 +1470,24 @@ localStorage.getItem('user');
 
 loadDiary();
 
-}
+loadSongs();
+
+};
+
+
+/* ================= MOOD ================= */
 
 function addMood(mood){
 
-editor.innerHTML+='<br>'+mood+'<br>';
+editor.innerHTML+=
+'<br>'+mood+'<br>';
 
 updateCounter();
 
 }
+
+
+/* ================= VOICE ================= */
 
 function startVoice(){
 
@@ -1151,7 +1499,8 @@ return;
 
 }
 
-let recognition=new webkitSpeechRecognition();
+let recognition=
+new webkitSpeechRecognition();
 
 recognition.lang='en-US';
 
@@ -1159,7 +1508,8 @@ recognition.start();
 
 recognition.onresult=function(event){
 
-editor.innerHTML+=' '+event.results[0][0].transcript;
+editor.innerHTML+=
+' '+event.results[0][0].transcript;
 
 updateCounter();
 
@@ -1169,17 +1519,21 @@ openPage('home');
 
 }
 
+
+/* ================= PHOTO ================= */
+
 function uploadPhoto(event){
 
 let file=event.target.files[0];
 
-if(!file) return;
+if(!file)return;
 
 let reader=new FileReader();
 
 reader.onload=function(){
 
-let img=document.getElementById('photoPreview');
+let img=
+document.getElementById('photoPreview');
 
 img.src=reader.result;
 
@@ -1190,6 +1544,9 @@ img.style.display='block';
 reader.readAsDataURL(file);
 
 }
+
+
+/* ================= THEME ================= */
 
 function toggleTheme(){
 
@@ -1207,6 +1564,9 @@ localStorage.setItem('theme','dark');
 
 }
 
+
+/* ================= LOGOUT ================= */
+
 function logout(){
 
 localStorage.removeItem('user');
@@ -1216,6 +1576,9 @@ localStorage.removeItem('password');
 location.reload();
 
 }
+
+
+/* ================= AUTO SAVE ================= */
 
 setInterval(()=>{
 
@@ -1232,6 +1595,9 @@ btoa(unescape(encodeURIComponent(txt)))
 
 },4000);
 
+
+/* ================= MULTI PHOTOS ================= */
+
 function photoKey(){
 
 return 'photos_'+diaryKey();
@@ -1242,12 +1608,17 @@ function addPhotos(event){
 
 let files=event.target.files;
 
-let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
+let arr=
+JSON.parse(
+localStorage.getItem(photoKey()) || "[]"
+);
 
 Array.from(files).forEach(file=>{
-    if(file.size > 2000000){
+
+if(file.size>2000000){
 
 alert("Image too large");
+
 return;
 
 }
@@ -1258,7 +1629,10 @@ reader.onload=function(){
 
 arr.push(reader.result);
 
-localStorage.setItem(photoKey(),JSON.stringify(arr));
+localStorage.setItem(
+photoKey(),
+JSON.stringify(arr)
+);
 
 renderPhotos();
 
@@ -1272,18 +1646,27 @@ reader.readAsDataURL(file);
 
 function renderPhotos(){
 
-let box=document.getElementById("photoGallery");
+let box=
+document.getElementById("photoGallery");
 
-let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
+let arr=
+JSON.parse(
+localStorage.getItem(photoKey()) || "[]"
+);
 
 box.innerHTML='';
 
 arr.forEach((img,index)=>{
 
 box.innerHTML+=`
-<div style="position:relative;width:90px;height:90px;">
 
-<img 
+<div style="
+position:relative;
+width:90px;
+height:90px;
+">
+
+<img
 src="${img}"
 style="
 width:90px;
@@ -1293,7 +1676,7 @@ border-radius:14px;
 border:2px solid rgba(255,255,255,0.15);
 ">
 
-<button 
+<button
 onclick="deletePhoto(${index})"
 style="
 position:absolute;
@@ -1312,10 +1695,13 @@ display:flex;
 align-items:center;
 justify-content:center;
 ">
+
 ✕
+
 </button>
 
 </div>
+
 `;
 
 });
@@ -1324,11 +1710,17 @@ justify-content:center;
 
 function deletePhoto(index){
 
-let arr=JSON.parse(localStorage.getItem(photoKey()) || "[]");
+let arr=
+JSON.parse(
+localStorage.getItem(photoKey()) || "[]"
+);
 
 arr.splice(index,1);
 
-localStorage.setItem(photoKey(),JSON.stringify(arr));
+localStorage.setItem(
+photoKey(),
+JSON.stringify(arr)
+);
 
 renderPhotos();
 
@@ -1336,20 +1728,34 @@ showMsg("Photo Deleted 🗑");
 
 }
 
+
+/* ================= SUGGESTION ================= */
+
 function suggestDiary(){
 
 let suggestions=[
+
 "Today I learned something new about...",
+
 "A moment that made me happy today was...",
+
 "Something I want to improve tomorrow is...",
+
 "One thing I am grateful for is...",
+
 "My biggest achievement today was..."
+
 ];
 
 document.getElementById("suggestBox").innerText=
-suggestions[Math.floor(Math.random()*suggestions.length)];
+suggestions[
+Math.floor(Math.random()*suggestions.length)
+];
 
 }
+
+
+/* ================= TRASH ================= */
 
 function deleteDiary(key){
 
@@ -1372,7 +1778,10 @@ showList();
 
 function restoreDiary(key){
 
-localStorage.setItem(key,localStorage.getItem("trash_"+key));
+localStorage.setItem(
+key,
+localStorage.getItem("trash_"+key)
+);
 
 localStorage.removeItem("trash_"+key);
 
@@ -1384,17 +1793,22 @@ loadTrash();
 
 function loadTrash(){
 
-let list=document.getElementById("trashList");
+let list=
+document.getElementById("trashList");
 
 list.innerHTML='';
 
 Object.keys(localStorage)
-.filter(key=>key.startsWith("trash_diary_"))
+.filter(key=>
+key.startsWith("trash_diary_")
+)
 .forEach(key=>{
 
-let originalKey = key.replace("trash_","");
+let originalKey=
+key.replace("trash_","");
 
 list.innerHTML+=`
+
 <div class="item">
 
 <div style="
@@ -1406,12 +1820,14 @@ flex-wrap:wrap;
 ">
 
 <div style="font-weight:600;flex:1;">
+
 🗑 ${originalKey}
+
 </div>
 
 <div style="display:flex;gap:8px;">
 
-<button 
+<button
 onclick="restoreDiary('${originalKey}')"
 style="
 width:auto;
@@ -1423,10 +1839,12 @@ color:white;
 font-size:12px;
 cursor:pointer;
 ">
+
 ↩ Restore
+
 </button>
 
-<button 
+<button
 onclick="permanentDelete('${key}')"
 style="
 width:auto;
@@ -1438,7 +1856,9 @@ color:white;
 font-size:12px;
 cursor:pointer;
 ">
+
 🗑 Delete
+
 </button>
 
 </div>
@@ -1446,6 +1866,7 @@ cursor:pointer;
 </div>
 
 </div>
+
 `;
 
 });
@@ -1466,6 +1887,9 @@ showMsg("Permanently Deleted ❌");
 
 }
 
+
+/* ================= PIN ================= */
+
 function pinDiary(){
 
 let key="pin_"+diaryKey();
@@ -1473,6 +1897,7 @@ let key="pin_"+diaryKey();
 if(localStorage.getItem(key)){
 
 showMsg("Already Pinned 📌");
+
 return;
 
 }
@@ -1483,21 +1908,13 @@ showMsg("Diary Pinned 📌");
 
 }
 
-function toggleMusic(){
 
-let music=document.getElementById("bgMusic");
-
-if(music.paused){
-music.play();
-}else{
-music.pause();
-}
-
-}
+/* ================= CALENDAR ================= */
 
 function renderCalendar(){
 
-let box=document.getElementById("calendar");
+let box=
+document.getElementById("calendar");
 
 let today=new Date();
 
@@ -1505,85 +1922,40 @@ let year=today.getFullYear();
 
 let month=today.getMonth();
 
-let days=new Date(year,month+1,0).getDate();
+let days=
+new Date(year,month+1,0).getDate();
 
 box.innerHTML='';
 
 for(let i=1;i<=days;i++){
 
-let d=`${year}-${String(month+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+let d=
+`${year}-${String(month+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
 
 box.innerHTML+=`
-<button onclick="openDiary('${d}')">${i}</button>
+
+<button onclick="openDiary('${d}')">
+${i}
+</button>
+
 `;
 
 }
 
 }
 
-function format(cmd){
 
-document.execCommand(cmd,false,null);
-
-}
-
-function exportData(){
-
-let data=JSON.stringify(localStorage);
-
-let blob=new Blob([data],{type:"application/json"});
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-
-a.download="my-diary-backup.json";
-
-a.click();
-
-}
-
-function importData(event){
-
-let file=event.target.files[0];
-
-if(!file) return;
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
-try{
-
-let data=JSON.parse(reader.result);
-
-Object.keys(data).forEach(key=>{
-
-localStorage.setItem(key,data[key]);
-
-});
-
-alert("Backup Restored ✅");
-
-location.reload();
-
-}catch{
-
-alert("Invalid Backup File");
-
-}
-
-};
-
-reader.readAsText(file);
-
-}
+/* ================= EDITOR ================= */
 
 function format(command){
 
 editor.focus();
 
-document.execCommand(command,false,null);
+document.execCommand(
+command,
+false,
+null
+);
 
 updateCounter();
 
@@ -1595,7 +1967,11 @@ let url=prompt("Enter URL");
 
 if(url){
 
-document.execCommand('createLink',false,url);
+document.execCommand(
+'createLink',
+false,
+url
+);
 
 }
 
@@ -1605,13 +1981,22 @@ function changeColor(){
 
 editor.focus();
 
-let color=prompt("Enter color name or hex code");
+let color=
+prompt("Enter color name or hex code");
 
 if(color){
 
-document.execCommand('styleWithCSS', false, true);
+document.execCommand(
+'styleWithCSS',
+false,
+true
+);
 
-document.execCommand('foreColor', false, color);
+document.execCommand(
+'foreColor',
+false,
+color
+);
 
 }
 
@@ -1628,17 +2013,25 @@ updateCounter();
 }
 
 }
-let currentFontSize = 3;
+
+
+/* ================= FONT SIZE ================= */
+
+let currentFontSize=3;
 
 function increaseFontSize(){
 
-if(currentFontSize < 7){
+if(currentFontSize<7){
 
 currentFontSize++;
 
 editor.focus();
 
-document.execCommand('fontSize', false, currentFontSize);
+document.execCommand(
+'fontSize',
+false,
+currentFontSize
+);
 
 }
 
@@ -1646,17 +2039,459 @@ document.execCommand('fontSize', false, currentFontSize);
 
 function decreaseFontSize(){
 
-if(currentFontSize > 1){
+if(currentFontSize>1){
 
 currentFontSize--;
 
 editor.focus();
 
-document.execCommand('fontSize', false, currentFontSize);
+document.execCommand(
+'fontSize',
+false,
+currentFontSize
+);
 
 }
 
 }
+
+
+/* =====================================================
+                MUSIC PLAYER
+===================================================== */
+
+let songs=[];
+let currentSongIndex=-1;
+
+const music=
+document.getElementById('bgMusic');
+
+const musicNow=
+document.getElementById('musicNow');
+
+const musicPlayBtn=
+document.getElementById('musicPlayBtn');
+
+const musicProgress=
+document.getElementById('musicProgress');
+
+const currentTimeEl=
+document.getElementById('currentTime');
+
+const durationEl=
+document.getElementById('duration');
+
+
+/* LOAD SONGS */
+
+function loadSongs(){
+
+try{
+
+songs=
+JSON.parse(
+localStorage.getItem('myDiarySongs') || '[]'
+);
+
+}catch{
+
+songs=[];
+
+}
+
+renderSongList();
+
+}
+
+
+/* ADD SONG */
+
+function addSongs(event){
+
+let files=
+Array.from(event.target.files);
+
+if(!files.length)return;
+
+files.forEach(file=>{
+
+if(!file.type.startsWith('audio/')){
+
+alert(file.name+' is not an audio file');
+
+return;
+
+}
+
+let reader=
+new FileReader();
+
+reader.onload=function(e){
+
+songs.push({
+
+name:file.name,
+
+data:e.target.result
+
+});
+
+localStorage.setItem(
+'myDiarySongs',
+JSON.stringify(songs)
+);
+
+renderSongList();
+
+};
+
+reader.readAsDataURL(file);
+
+});
+
+event.target.value='';
+
+}
+
+
+/* SONG LIST */
+
+function renderSongList(){
+
+let list=
+document.getElementById('songList');
+
+list.innerHTML='';
+
+if(songs.length===0){
+
+list.innerHTML=`
+
+<div style="
+text-align:center;
+padding:20px;
+opacity:0.7;
+">
+
+🎵 No songs added yet.<br>
+Click "Add Song" to add music.
+
+</div>
+
+`;
+
+return;
+
+}
+
+songs.forEach((song,index)=>{
+
+let active=
+index===currentSongIndex
+?'active'
+:'';
+
+list.innerHTML+=`
+
+<div class="songItem ${active}">
+
+<div
+class="songName"
+onclick="playSong(${index})"
+title="${escapeHtml(song.name)}">
+
+🎵 ${escapeHtml(song.name)}
+
+</div>
+
+<button
+class="songDelete"
+onclick="deleteSong(${index})">
+
+✕
+
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* SAFE TEXT */
+
+function escapeHtml(text){
+
+return text
+.replace(/&/g,'&amp;')
+.replace(/</g,'&lt;')
+.replace(/>/g,'&gt;')
+.replace(/"/g,'&quot;')
+.replace(/'/g,'&#039;');
+
+}
+
+
+/* PLAY SONG */
+
+function playSong(index){
+
+if(!songs[index])return;
+
+currentSongIndex=index;
+
+music.src=songs[index].data;
+
+music.load();
+
+music.play()
+.then(()=>{
+
+musicPlayBtn.innerText='⏸';
+
+})
+.catch(()=>{
+
+alert(
+'Browser could not play this song.'
+);
+
+});
+
+musicNow.innerText=
+'🎵 '+songs[index].name;
+
+renderSongList();
+
+}
+
+
+/* PLAY / PAUSE */
+
+function toggleMusic(){
+
+if(!songs.length){
+
+alert('First add a song 🎵');
+
+openPage('music');
+
+return;
+
+}
+
+if(!music.src){
+
+playSong(0);
+
+return;
+
+}
+
+if(music.paused){
+
+music.play();
+
+musicPlayBtn.innerText='⏸';
+
+}else{
+
+music.pause();
+
+musicPlayBtn.innerText='▶️';
+
+}
+
+}
+
+
+/* NEXT */
+
+function nextSong(){
+
+if(!songs.length)return;
+
+if(currentSongIndex===-1){
+
+playSong(0);
+
+return;
+
+}
+
+currentSongIndex=
+(currentSongIndex+1)%songs.length;
+
+playSong(currentSongIndex);
+
+}
+
+
+/* PREVIOUS */
+
+function previousSong(){
+
+if(!songs.length)return;
+
+if(currentSongIndex===-1){
+
+playSong(0);
+
+return;
+
+}
+
+currentSongIndex=
+(currentSongIndex-1+songs.length)
+%songs.length;
+
+playSong(currentSongIndex);
+
+}
+
+
+/* DELETE SONG */
+
+function deleteSong(index){
+
+if(!confirm('Delete this song?'))return;
+
+if(index===currentSongIndex){
+
+music.pause();
+
+music.removeAttribute('src');
+
+music.load();
+
+currentSongIndex=-1;
+
+musicNow.innerText='No song selected';
+
+musicPlayBtn.innerText='▶️';
+
+}
+
+songs.splice(index,1);
+
+localStorage.setItem(
+'myDiarySongs',
+JSON.stringify(songs)
+);
+
+if(currentSongIndex>index){
+
+currentSongIndex--;
+
+}
+
+renderSongList();
+
+}
+
+
+/* VOLUME */
+
+function changeVolume(value){
+
+music.volume=value;
+
+localStorage.setItem(
+'musicVolume',
+value
+);
+
+}
+
+
+/* PROGRESS */
+
+music.addEventListener('loadedmetadata',function(){
+
+musicProgress.max=
+music.duration || 100;
+
+durationEl.innerText=
+formatTime(music.duration);
+
+});
+
+music.addEventListener('timeupdate',function(){
+
+if(!music.duration)return;
+
+musicProgress.value=
+music.currentTime;
+
+currentTimeEl.innerText=
+formatTime(music.currentTime);
+
+});
+
+function seekMusic(value){
+
+if(music.duration){
+
+music.currentTime=value;
+
+}
+
+}
+
+
+/* AUTO NEXT */
+
+music.addEventListener('ended',function(){
+
+nextSong();
+
+});
+
+
+/* TIME FORMAT */
+
+function formatTime(seconds){
+
+if(!seconds || isNaN(seconds)){
+
+return '0:00';
+
+}
+
+let min=
+Math.floor(seconds/60);
+
+let sec=
+Math.floor(seconds%60);
+
+return min+':'+
+String(sec).padStart(2,'0');
+
+}
+
+
+/* RESTORE VOLUME */
+
+let savedVolume=
+localStorage.getItem('musicVolume');
+
+if(savedVolume!==null){
+
+music.volume=
+parseFloat(savedVolume);
+
+document.getElementById('musicVolume').value=
+savedVolume;
+
+}else{
+
+music.volume=0.8;
+
+}
+
 </script>
 
 </body>
