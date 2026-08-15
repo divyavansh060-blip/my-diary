@@ -2504,146 +2504,7 @@ savedVolume;
 music.volume=0.8;
 
 }
- /* ================= PWA INSTALL ================= */
-
-let deferredPrompt = null;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-
-    e.preventDefault();
-
-    deferredPrompt = e;
-
-    const installBtn = document.getElementById("installBtn");
-
-    if (installBtn) {
-        installBtn.style.display = "block";
-    }
-
-});
-
-
-async function installApp() {
-
-    if (!deferredPrompt) {
-
-        alert(
-            "Install option is not available yet.\n\n" +
-            "Please open My Diary using Chrome/Edge on HTTPS or localhost."
-        );
-
-        return;
-    }
-
-    deferredPrompt.prompt();
-
-    const { outcome } = await deferredPrompt.userChoice;
-
-    console.log("Install result:", outcome);
-
-    deferredPrompt = null;
-
-    const installBtn = document.getElementById("installBtn");
-
-    if (installBtn) {
-        installBtn.style.display = "none";
-    }
-
-}
-
-
-/* App already installed */
-
-window.addEventListener("appinstalled", () => {
-
-    console.log("My Diary installed successfully ✅");
-
-    const installBtn = document.getElementById("installBtn");
-
-    if (installBtn) {
-        installBtn.style.display = "none";
-    }
-
-});
-
-</script>
-<!-- PWA INSTALL BUTTON -->
-<button id="installBtn"
-style="
-display:none;
-position:fixed;
-bottom:120px;
-right:30px;
-z-index:9999;
-padding:14px 20px;
-border:none;
-border-radius:18px;
-background:linear-gradient(135deg,#00b4db,#0083b0);
-color:white;
-font-weight:600;
-font-size:14px;
-box-shadow:0 10px 25px rgba(0,0,0,.35);
-cursor:pointer;
-">
-📲 Install App
-</button>
-
-<script>
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (event) => {
-
-    event.preventDefault();
-
-    deferredPrompt = event;
-
-    document.getElementById('installBtn').style.display = 'block';
-
-});
-
-document.getElementById('installBtn').addEventListener('click', async () => {
-
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-
-    const result = await deferredPrompt.userChoice;
-
-    if (result.outcome === 'accepted') {
-        console.log('My Diary installed');
-    }
-
-    deferredPrompt = null;
-
-    document.getElementById('installBtn').style.display = 'none';
-
-});
-
-window.addEventListener('appinstalled', () => {
-
-    document.getElementById('installBtn').style.display = 'none';
-
-});
-</script>
-
-<script>
-if ('serviceWorker' in navigator) {
-
-    window.addEventListener('load', () => {
-
-        navigator.serviceWorker
-        .register('./sw.js')
-        .then(() => {
-            console.log('Service Worker Registered ✅');
-        })
-        .catch(error => {
-            console.error('Service Worker Error:', error);
-        });
-
-    });
-
-}
-</script>
+   
     <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -2653,5 +2514,147 @@ if ('serviceWorker' in navigator) {
     });
 }
 </script>
+
+ <!-- ================= PWA INSTALL BUTTON ================= -->
+
+<button id="installBtn"
+    style="
+        display:none;
+        position:fixed;
+        bottom:30px;
+        right:30px;
+        z-index:99999;
+        width:auto;
+        padding:15px 22px;
+        border:none;
+        border-radius:18px;
+        background:linear-gradient(135deg,#00b4db,#0083b0);
+        color:white;
+        font-weight:600;
+        font-size:15px;
+        box-shadow:0 10px 25px rgba(0,0,0,.4);
+        cursor:pointer;
+    ">
+    📲 Install My Diary
+</button>
+
+
+<script>
+
+let deferredPrompt = null;
+
+const installBtn =
+    document.getElementById("installBtn");
+
+
+/* ================= INSTALL PROMPT ================= */
+
+window.addEventListener("beforeinstallprompt", (event) => {
+
+    console.log("✅ PWA install prompt available");
+
+    event.preventDefault();
+
+    deferredPrompt = event;
+
+    if (installBtn) {
+        installBtn.style.display = "block";
+    }
+
+});
+
+
+/* ================= INSTALL BUTTON ================= */
+
+if (installBtn) {
+
+    installBtn.addEventListener("click", async () => {
+
+        if (!deferredPrompt) {
+
+            alert(
+                "Install option is not available yet.\n\n" +
+                "Please open My Diary using Chrome or Edge " +
+                "on HTTPS or localhost."
+            );
+
+            return;
+        }
+
+
+        deferredPrompt.prompt();
+
+
+        const result =
+            await deferredPrompt.userChoice;
+
+
+        console.log(
+            "Install result:",
+            result.outcome
+        );
+
+
+        deferredPrompt = null;
+
+
+        installBtn.style.display = "none";
+
+    });
+
+}
+
+
+/* ================= APP INSTALLED ================= */
+
+window.addEventListener("appinstalled", () => {
+
+    console.log(
+        "✅ My Diary installed successfully"
+    );
+
+    deferredPrompt = null;
+
+    if (installBtn) {
+        installBtn.style.display = "none";
+    }
+
+});
+
+
+/* ================= SERVICE WORKER ================= */
+
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("./sw.js")
+
+            .then((registration) => {
+
+                console.log(
+                    "✅ Service Worker Registered:",
+                    registration.scope
+                );
+
+            })
+
+            .catch((error) => {
+
+                console.error(
+                    "❌ Service Worker Error:",
+                    error
+                );
+
+            });
+
+    });
+
+}
+
+</script>
+
 </body>
 </html>
+
