@@ -2,7 +2,7 @@
   "name": "My Diary",
   "short_name": "My Diary",
   "description": "Secure Personal Digital Journal",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
