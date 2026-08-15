@@ -1,2660 +1,3624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <link rel="manifest" href="manifest.json">
-
-<meta name="theme-color" content="#00b4db">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>My Diary</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<meta name="theme-color" content="#00b4db">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-
-<style>
-
-:root{
---primary:#00b4db;
---secondary:#0083b0;
---dark:#0f172a;
---card:rgba(255,255,255,0.08);
---border:rgba(255,255,255,0.1);
---white:#fff;
-}
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
-
-html{
-scroll-behavior:smooth;
-}
-
-body{
-background:var(--dark);
-color:white;
-overflow-y:auto;
-position:relative;
-}
-
-body::before{
-content:'';
-position:fixed;
-width:200%;
-height:200%;
-background:radial-gradient(circle,#00b4db22 1px,transparent 1px);
-background-size:40px 40px;
-animation:bgMove 25s linear infinite;
-z-index:-1;
-}
-
-@keyframes bgMove{
-from{transform:translate(0,0);}
-to{transform:translate(-200px,-200px);}
-}
-
-#splash{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#020617;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:99999;
-animation:fadeOut 1s ease 2s forwards;
-}
-
-#splash h1{
-font-size:70px;
-margin-bottom:10px;
-}
-
-#splash p{
-opacity:0.8;
-}
-
-@keyframes fadeOut{
-to{
-opacity:0;
-visibility:hidden;
-}
-}
-
-#loginPage{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:
-linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.85)),
-url('https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=1600&auto=format&fit=crop');
-background-size:cover;
-background-position:center;
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:9999;
-}
-
-.loginBox{
-width:380px;
-padding:35px;
-background:rgba(255,255,255,0.08);
-backdrop-filter:blur(20px);
-border-radius:30px;
-border:1px solid var(--border);
-box-shadow:0 15px 40px rgba(0,0,0,0.4);
-}
-
-.loginBox h1{
-text-align:center;
-margin-bottom:25px;
-font-size:36px;
-}
-
-input,
-button{
-width:100%;
-border:none;
-outline:none;
-}
-
-input{
-padding:16px;
-margin-top:15px;
-border-radius:18px;
-background:rgba(255,255,255,0.08);
-color:white;
-font-size:15px;
-}
-
-input::placeholder{
-color:#ddd;
-}
-
-button{
-cursor:pointer;
-transition:0.3s;
-}
-
-.loginBtn,
-.actionBtn{
-padding:15px;
-margin-top:15px;
-border-radius:18px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:white;
-font-weight:600;
-}
-
-.loginBtn:hover,
-.actionBtn:hover{
-transform:translateY(-3px);
-}
-
-.app{
-display:flex;
-height:100vh;
-}
-
-.sidebar{
-width:280px;
-background:rgba(0,0,0,0.35);
-backdrop-filter:blur(20px);
-padding:25px;
-display:flex;
-flex-direction:column;
-gap:12px;
-overflow:auto;
-border-right:1px solid var(--border);
- <button id="installBtn" onclick="installApp()" style="display:none;">
-    📲 Install App
-</button>
-
-<button onclick="toggleTheme()">🌙 Theme</button>
-}
-
-.logo{
-font-size:34px;
-font-weight:700;
-text-align:center;
-margin-bottom:15px;
-}
-
-.sidebar button{
-padding:15px;
-border-radius:16px;
-background:rgba(255,255,255,0.08);
-color:white;
-font-size:15px;
-}
-
-.sidebar button:hover{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-transform:translateX(5px);
-}
-
-.main{
-flex:1;
-overflow-y:auto;
-padding:30px;
-}
-
-.top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:25px;
-padding-bottom:15px;
-border-bottom:1px solid rgba(255,255,255,0.08);
-}
-
-.profile{
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px 15px;
-background:rgba(255,255,255,0.08);
-border-radius:16px;
-}
-
-.card{
-background:var(--card);
-padding:25px;
-border-radius:28px;
-backdrop-filter:blur(18px);
-border:1px solid var(--border);
-box-shadow:0 10px 25px rgba(0,0,0,0.25);
-}
-
-.page{
-display:none;
-animation:fade 0.4s ease;
-}
-
-.show{
-display:block;
-}
-
-@keyframes fade{
-from{
-opacity:0;
-transform:translateY(10px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-.moods{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin:15px 0;
-}
-
-.moods button{
-padding:10px 18px;
-border-radius:50px;
-background:rgba(255,255,255,0.1);
-color:white;
-width:auto;
-}
-
-.toolbar{
-display:flex;
-gap:10px;
-margin:15px 0;
-flex-wrap:wrap;
-}
-
-.toolbar button{
-width:55px;
-height:55px;
-border-radius:14px;
-background:rgba(255,255,255,0.12);
-color:white;
-font-size:18px;
-font-weight:600;
-border:1px solid rgba(255,255,255,0.1);
-}
-
-.toolbar button:hover{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-transform:translateY(-3px);
-}
-
-#editor{
-min-height:320px;
-padding:18px;
-border-radius:18px;
-background:rgba(255,255,255,0.08);
-line-height:1.8;
-outline:none;
-overflow:auto;
-}
-
-.counter{
-margin-top:10px;
-text-align:right;
-font-size:13px;
-color:#ccc;
-}
-
-.msg{
-margin-top:12px;
-color:#8eff8e;
-font-weight:600;
-}
-
-.saveBtn{
-position:fixed;
-bottom:30px;
-right:30px;
-width:75px;
-height:75px;
-border-radius:50%;
-font-size:28px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-color:white;
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
-z-index:100;
-}
-
-.list{
-margin-top:20px;
-max-height:500px;
-overflow:auto;
-}
-
-.item{
-background:rgba(255,255,255,0.08);
-padding:18px;
-border-radius:18px;
-margin-bottom:12px;
-transition:0.3s;
-}
-
-.item:hover{
-transform:translateY(-4px);
-background:rgba(255,255,255,0.14);
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:20px;
-margin-top:20px;
-}
-
-.stat{
-background:rgba(255,255,255,0.08);
-padding:25px;
-border-radius:22px;
-text-align:center;
-}
-
-.stat h1{
-font-size:40px;
-margin-bottom:5px;
-}
-
-.profileImageBox{
-display:flex;
-flex-direction:column;
-align-items:center;
-margin-bottom:20px;
-}
-
-#profilePreview{
-width:140px;
-height:140px;
-border-radius:50%;
-object-fit:cover;
-border:5px solid rgba(255,255,255,0.2);
-cursor:pointer;
-}
-
-.uploadText{
-margin-top:10px;
-font-size:14px;
-color:#ddd;
-}
-
-#photoPreview{
-width:100%;
-margin-top:20px;
-border-radius:20px;
-display:none;
-}
-
-#photoGallery img{
-width:90px;
-height:90px;
-object-fit:cover;
-border-radius:14px;
-border:2px solid rgba(255,255,255,0.15);
-}
-
-.calendar{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-top:15px;
-}
-
-.calendar button{
-width:55px;
-height:55px;
-border-radius:12px;
-background:rgba(255,255,255,0.08);
-color:white;
-}
-
-.calendar button:hover{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-}
-
-.lightTheme{
-background:#f1f5f9;
-color:#111;
-}
-
-.lightTheme .card,
-.lightTheme .sidebar,
-.lightTheme input,
-.lightTheme #editor,
-.lightTheme .item,
-.lightTheme .profile{
-background:white;
-color:black;
-}
-
-.lightTheme .sidebar button,
-.lightTheme .toolbar button,
-.lightTheme .calendar button{
-background:#e2e8f0;
-color:black;
-}
-
-/* ================= MUSIC PLAYER ================= */
-
-.musicPlayer{
-margin-top:20px;
-background:rgba(0,0,0,0.25);
-border:1px solid rgba(255,255,255,0.12);
-border-radius:24px;
-padding:20px;
-}
-
-.musicTitle{
-font-size:22px;
-font-weight:600;
-margin-bottom:5px;
-}
-
-.musicNow{
-font-size:14px;
-color:#b9eefa;
-margin-bottom:15px;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-
-.musicControls{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:10px;
-margin:15px 0;
-}
-
-.musicControls button{
-width:50px;
-height:50px;
-border-radius:50%;
-background:rgba(255,255,255,0.1);
-color:white;
-font-size:18px;
-}
-
-.musicControls button:hover{
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-transform:scale(1.08);
-}
-
-.musicControls .playBtn{
-width:60px;
-height:60px;
-font-size:23px;
-}
-
-.musicVolume{
-width:100%;
-margin:10px 0;
-}
-
-.musicAdd{
-display:flex;
-gap:10px;
-align-items:center;
-margin-top:15px;
-}
-
-.musicAdd label{
-flex:1;
-padding:13px;
-border-radius:15px;
-background:linear-gradient(135deg,var(--primary),var(--secondary));
-text-align:center;
-cursor:pointer;
-font-weight:600;
-}
-
-.musicAdd input{
-display:none;
-}
-
-.songList{
-margin-top:15px;
-max-height:220px;
-overflow-y:auto;
-}
-
-.songItem{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-padding:12px;
-margin-bottom:8px;
-border-radius:14px;
-background:rgba(255,255,255,0.07);
-}
-
-.songItem.active{
-background:linear-gradient(135deg,#00b4db55,#0083b055);
-border:1px solid rgba(0,180,219,0.4);
-}
-
-.songName{
-flex:1;
-font-size:14px;
-overflow:hidden;
-white-space:nowrap;
-text-overflow:ellipsis;
-cursor:pointer;
-}
-
-.songDelete{
-width:35px !important;
-height:35px;
-padding:0 !important;
-border-radius:10px !important;
-background:#ef4444 !important;
-color:white !important;
-font-size:15px !important;
-}
-
-.musicProgress{
-width:100%;
-cursor:pointer;
-}
-
-.musicTime{
-display:flex;
-justify-content:space-between;
-font-size:12px;
-color:#ccc;
-margin-top:4px;
-}
-
-::-webkit-scrollbar{
-width:8px;
-height:8px;
-}
-
-::-webkit-scrollbar-thumb{
-background:rgba(255,255,255,0.2);
-border-radius:20px;
-}
-
-@media(max-width:900px){
-
-.app{
-flex-direction:column;
-}
-
-.sidebar{
-width:100%;
-flex-direction:row;
-overflow:auto;
-}
-
-.main{
-padding:20px;
-}
-
-.top{
-flex-direction:column;
-gap:15px;
-align-items:flex-start;
-}
-
-}
-
-</style>
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="theme-color" content="#00b4db">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Diary</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        :root {
+            --primary: #00b4db;
+            --secondary: #0083b0;
+            --dark: #0f172a;
+            --card: rgba(255, 255, 255, 0.08);
+            --border: rgba(255, 255, 255, 0.1);
+            --white: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--dark);
+            color: white;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(
+                circle,
+                #00b4db22 1px,
+                transparent 1px
+            );
+            background-size: 40px 40px;
+            animation: bgMove 25s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgMove {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(-200px, -200px);
+            }
+        }
+
+        /* ================= SPLASH ================= */
+
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020617;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 99999;
+            animation: fadeOut 1s ease 2s forwards;
+        }
+
+        #splash h1 {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+
+        #splash p {
+            opacity: 0.8;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* ================= LOGIN ================= */
+
+        #loginPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.65),
+                    rgba(0, 0, 0, 0.85)
+                ),
+                url("https://images.unsplash.com/photo-1517842645767-c639042777db?q=80&w=1600&auto=format&fit=crop");
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loginBox {
+            width: 380px;
+            padding: 35px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .loginBox h1 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 36px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            border: none;
+            outline: none;
+        }
+
+        input {
+            padding: 16px;
+            margin-top: 15px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 15px;
+        }
+
+        input::placeholder {
+            color: #ddd;
+        }
+
+        button {
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .loginBtn,
+        .actionBtn {
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 18px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            color: white;
+            font-weight: 600;
+        }
+
+        .loginBtn:hover,
+        .actionBtn:hover {
+            transform: translateY(-3px);
+        }
+
+        /* ================= APP ================= */
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: auto;
+            border-right: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 34px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .sidebar button,
+        .sidebar .actionBtn {
+            padding: 15px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            font-size: 15px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .sidebar button:hover,
+        .sidebar .actionBtn:hover {
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            transform: translateX(5px);
+        }
+
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 28px;
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        .page {
+            display: none;
+            animation: fade 0.4s ease;
+        }
+
+        .show {
+            display: block;
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ================= MOODS ================= */
+
+        .moods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .moods button {
+            padding: 10px 18px;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            width: auto;
+        }
+
+        /* ================= TOOLBAR ================= */
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .toolbar button {
+            width: 55px;
+            height: 55px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toolbar button:hover {
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            transform: translateY(-3px);
+        }
+
+        #editor {
+            min-height: 320px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            line-height: 1.8;
+            outline: none;
+            overflow: auto;
+        }
+
+        .counter {
+            margin-top: 10px;
+            text-align: right;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .msg {
+            margin-top: 12px;
+            color: #8eff8e;
+            font-weight: 600;
+        }
+
+        .saveBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            font-size: 28px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            z-index: 100;
+        }
+
+        /* ================= LIST ================= */
+
+        .list {
+            margin-top: 20px;
+            max-height: 500px;
+            overflow: auto;
+        }
+
+        .item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 18px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+
+        .item:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        /* ================= DASHBOARD ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 25px;
+            border-radius: 22px;
+            text-align: center;
+        }
+
+        .stat h1 {
+            font-size: 40px;
+            margin-bottom: 5px;
+        }
+
+        /* ================= PROFILE ================= */
+
+        .profileImageBox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #profilePreview {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        .uploadText {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        #photoPreview {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 20px;
+            display: none;
+        }
+
+        #photoGallery img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* ================= CALENDAR ================= */
+
+        .calendar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .calendar button {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+        }
+
+        .calendar button:hover {
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+        }
+
+        /* ================= LIGHT THEME ================= */
+
+        .lightTheme {
+            background: #f1f5f9;
+            color: #111;
+        }
+
+        .lightTheme .card,
+        .lightTheme .sidebar,
+        .lightTheme input,
+        .lightTheme #editor,
+        .lightTheme .item,
+        .lightTheme .profile {
+            background: white;
+            color: black;
+        }
+
+        .lightTheme input::placeholder {
+            color: #555;
+        }
+
+        .lightTheme .sidebar button,
+        .lightTheme .toolbar button,
+        .lightTheme .calendar button {
+            background: #e2e8f0;
+            color: black;
+        }
+
+        /* ================= MUSIC PLAYER ================= */
+
+        .musicPlayer {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            padding: 20px;
+        }
+
+        .musicTitle {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .musicNow {
+            font-size: 14px;
+            color: #b9eefa;
+            margin-bottom: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .musicControls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .musicControls button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+        }
+
+        .musicControls button:hover {
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            transform: scale(1.08);
+        }
+
+        .musicControls .playBtn {
+            width: 60px;
+            height: 60px;
+            font-size: 23px;
+        }
+
+        .musicVolume {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .musicAdd {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .musicAdd label {
+            flex: 1;
+            padding: 13px;
+            border-radius: 15px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .musicAdd input {
+            display: none;
+        }
+
+        .songList {
+            margin-top: 15px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .songItem {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .songItem.active {
+            background: linear-gradient(
+                135deg,
+                #00b4db55,
+                #0083b055
+            );
+            border: 1px solid rgba(0, 180, 219, 0.4);
+        }
+
+        .songName {
+            flex: 1;
+            font-size: 14px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+
+        .songDelete {
+            width: 35px !important;
+            height: 35px;
+            padding: 0 !important;
+            border-radius: 10px !important;
+            background: #ef4444 !important;
+            color: white !important;
+            font-size: 15px !important;
+        }
+
+        .musicProgress {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .musicTime {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 4px;
+        }
+
+        /* ================= INSTALL BUTTON ================= */
+
+        #installBtn {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99999;
+            width: auto;
+            padding: 15px 22px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(
+                135deg,
+                #00b4db,
+                #0083b0
+            );
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+
+        /* ================= SCROLLBAR ================= */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+            .app {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 12px;
+            }
+
+            .sidebar .logo {
+                display: none;
+            }
+
+            .sidebar button,
+            .sidebar .actionBtn {
+                min-width: 130px;
+                width: auto;
+                white-space: nowrap;
+            }
+
+            .main {
+                padding: 20px;
+            }
+
+            .top {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .loginBox {
+                width: calc(100% - 30px);
+                padding: 25px;
+            }
+
+            .loginBox h1 {
+                font-size: 28px;
+            }
+
+            .main {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+
+            .saveBtn {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            #installBtn {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="splash">
-<h1>📔</h1>
-<h2>My Diary</h2>
-<p>Secure Personal Journal</p>
-</div>
+    <!-- ================= SPLASH ================= -->
 
-<div id="loginPage">
+    <div id="splash">
+        <h1>📔</h1>
+        <h2>My Diary</h2>
+        <p>Secure Personal Journal</p>
+    </div>
 
-<div class="loginBox">
+    <!-- ================= LOGIN ================= -->
 
-<h1>📔 My Diary</h1>
+    <div id="loginPage">
 
-<input type="text" id="loginName" placeholder="Enter Your Name">
+        <div class="loginBox">
 
-<input type="password" id="loginPass" placeholder="Password (8+ Characters)">
+            <h1>📔 My Diary</h1>
 
-<button class="loginBtn" onclick="login()">Login</button>
+            <input
+                type="text"
+                id="loginName"
+                placeholder="Enter Your Name"
+            >
 
-</div>
+            <input
+                type="password"
+                id="loginPass"
+                placeholder="Password (8+ Characters)"
+            >
 
-</div>
+            <button
+                class="loginBtn"
+                onclick="login()"
+            >
+                Login
+            </button>
 
-<div class="app">
+        </div>
 
-<div class="sidebar">
+    </div>
 
-<div class="logo">📔 Diary</div>
+    <!-- ================= APP ================= -->
 
-<button onclick="openPage('home')">🏠 Home</button>
-<button onclick="openPage('saved')">📚 Diaries</button>
-<button onclick="openPage('dashboard')">📊 Dashboard</button>
-<button onclick="openPage('favorite')">⭐ Favorites</button>
-<button onclick="openPage('trash')">🗑 Trash</button>
-<button onclick="openPage('profile')">👤 Profile</button>
-<button onclick="openPage('voice')">🎤 Voice</button>
-<button onclick="openPage('photo')">🖼 Photos</button>
-<button onclick="toggleTheme()">🌙 Theme</button>
-<button onclick="openPage('music')">🎵 Music</button>
-<button onclick="exportData()">⬇ Export Backup</button>
+    <div class="app">
 
-<label class="actionBtn" style="text-align:center;cursor:pointer;">
-⬆ Import Backup
-<input type="file" onchange="importData(event)" hidden>
-</label>
+        <!-- ================= SIDEBAR ================= -->
 
-<button onclick="logout()">🚪 Logout</button>
+        <div class="sidebar">
 
-</div>
+            <div class="logo">
+                📔 Diary
+            </div>
 
-<div class="main">
+            <button onclick="openPage('home')">
+                🏠 Home
+            </button>
 
-<div class="top">
+            <button onclick="openPage('saved')">
+                📚 Diaries
+            </button>
 
-<div>
-<h1>Welcome 👋</h1>
-<p>Your private digital journal</p>
-</div>
+            <button onclick="openPage('dashboard')">
+                📊 Dashboard
+            </button>
 
-<div class="profile">
+            <button onclick="openPage('favorite')">
+                ⭐ Favorites
+            </button>
 
-<img id="topProfileImg"
-src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
-style="width:50px;height:50px;border-radius:50%;object-fit:cover;">
+            <button onclick="openPage('trash')">
+                🗑 Trash
+            </button>
 
-<span id="topUserText">Guest</span>
+            <button onclick="openPage('profile')">
+                👤 Profile
+            </button>
 
-</div>
+            <button onclick="openPage('voice')">
+                🎤 Voice
+            </button>
 
-</div>
+            <button onclick="openPage('photo')">
+                🖼 Photos
+            </button>
 
-<!-- HOME -->
+            <button onclick="toggleTheme()">
+                🌙 Theme
+            </button>
 
-<div id="home" class="page show">
+            <button onclick="openPage('music')">
+                🎵 Music
+            </button>
 
-<div class="card">
+            <button onclick="exportData()">
+                ⬇ Export Backup
+            </button>
 
-<input type="date" id="date" onchange="loadDiary()">
+            <label
+                class="actionBtn"
+                style="text-align:center;cursor:pointer;"
+            >
+                ⬆ Import Backup
 
-<input type="file"
-id="multiPhotos"
-accept="image/*"
-multiple
-onchange="addPhotos(event)">
+                <input
+                    type="file"
+                    onchange="importData(event)"
+                    hidden
+                >
+            </label>
+
+            <button onclick="logout()">
+                🚪 Logout
+            </button>
+
+        </div>
+
+        <!-- ================= MAIN ================= -->
+
+        <div class="main">
+
+            <!-- ================= TOP ================= -->
+
+            <div class="top">
+
+                <div>
+                    <h1>
+                        Welcome 👋
+                    </h1>
+
+                    <p>
+                        Your private digital journal
+                    </p>
+                </div>
+
+                <div class="profile">
+
+                    <img
+                        id="topProfileImg"
+                        src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                        style="
+                            width:50px;
+                            height:50px;
+                            border-radius:50%;
+                            object-fit:cover;
+                        "
+                    >
+
+                    <span id="topUserText">
+                        Guest
+                    </span>
+
+                </div>
+
+            </div>
+
+            <!-- ================= HOME ================= -->
+
+            <div
+                id="home"
+                class="page show"
+            >
+
+                <div class="card">
+
+                    <input
+                        type="date"
+                        id="date"
+                        onchange="loadDiary()"
+                    >
+
+                    <input
+                        type="file"
+                        id="multiPhotos"
+                        accept="image/*"
+                        multiple
+                        onchange="addPhotos(event)"
+                    >
+
+                    <div
+                        id="photoGallery"
+                        style="
+                            display:flex;
+                            gap:10px;
+                            flex-wrap:wrap;
+                            margin-top:15px;
+                        "
+                    ></div>
+
+                    <!-- MOODS -->
+
+                    <div class="moods">
+
+                        <button
+                            onclick="addMood('😊 Happy')"
+                        >
+                            😊 Happy
+                        </button>
+
+                        <button
+                            onclick="addMood('😢 Sad')"
+                        >
+                            😢 Sad
+                        </button>
+
+                        <button
+                            onclick="addMood('😍 Love')"
+                        >
+                            😍 Love
+                        </button>
 
-<div id="photoGallery"
-style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
-</div>
+                        <button
+                            onclick="addMood('😡 Angry')"
+                        >
+                            😡 Angry
+                        </button>
+
+                    </div>
+
+                    <!-- SUGGESTION -->
+
+                    <button
+                        class="actionBtn"
+                        onclick="suggestDiary()"
+                    >
+                        💡 Suggest Idea
+                    </button>
+
+                    <div
+                        id="suggestBox"
+                        style="margin-top:12px;"
+                    ></div>
+
+                    <!-- EDITOR TOOLBAR -->
+
+                    <div class="toolbar">
+
+                        <button onclick="format('bold')">
+                            <b>B</b>
+                        </button>
+
+                        <button onclick="format('italic')">
+                            <i>I</i>
+                        </button>
+
+                        <button onclick="format('underline')">
+                            <u>U</u>
+                        </button>
+
+                        <button onclick="format('strikeThrough')">
+                            <s>S</s>
+                        </button>
+
+                        <button onclick="format('insertUnorderedList')">
+                            •
+                        </button>
+
+                        <button onclick="format('insertOrderedList')">
+                            1.
+                        </button>
+
+                        <button onclick="format('justifyLeft')">
+                            ⬅
+                        </button>
+
+                        <button onclick="format('justifyCenter')">
+                            ⬍
+                        </button>
+
+                        <button onclick="format('justifyRight')">
+                            ➡
+                        </button>
+
+                        <button onclick="format('undo')">
+                            ↩
+                        </button>
+
+                        <button onclick="format('redo')">
+                            ↪
+                        </button>
+
+                        <button onclick="addLink()">
+                            🔗
+                        </button>
+
+                        <button onclick="changeColor()">
+                            🎨
+                        </button>
+
+                        <button onclick="decreaseFontSize()">
+                            A-
+                        </button>
 
-<div class="moods">
+                        <button onclick="increaseFontSize()">
+                            A+
+                        </button>
 
-<button onclick="addMood('😊 Happy')">😊 Happy</button>
-<button onclick="addMood('😢 Sad')">😢 Sad</button>
-<button onclick="addMood('😍 Love')">😍 Love</button>
-<button onclick="addMood('😡 Angry')">😡 Angry</button>
+                        <button onclick="clearEditor()">
+                            🗑
+                        </button>
 
-</div>
+                    </div>
 
-<button class="actionBtn" onclick="suggestDiary()">
-💡 Suggest Idea
-</button>
+                    <!-- EDITOR -->
 
-<div id="suggestBox" style="margin-top:12px;"></div>
+                    <div
+                        id="editor"
+                        contenteditable="true"
+                    ></div>
 
-<div class="toolbar">
+                    <div
+                        class="counter"
+                        id="counter"
+                    >
+                        0 Characters
+                    </div>
 
-<button onclick="format('bold')"><b>B</b></button>
-<button onclick="format('italic')"><i>I</i></button>
-<button onclick="format('underline')"><u>U</u></button>
-<button onclick="format('strikeThrough')"><s>S</s></button>
-<button onclick="format('insertUnorderedList')">•</button>
-<button onclick="format('insertOrderedList')">1.</button>
-<button onclick="format('justifyLeft')">⬅</button>
-<button onclick="format('justifyCenter')">⬍</button>
-<button onclick="format('justifyRight')">➡</button>
-<button onclick="format('undo')">↩</button>
-<button onclick="format('redo')">↪</button>
-<button onclick="addLink()">🔗</button>
-<button onclick="changeColor()">🎨</button>
+                    <button
+                        class="actionBtn"
+                        onclick="addFavorite()"
+                    >
+                        ⭐ Add Favorite
+                    </button>
 
-<button onclick="decreaseFontSize()">A</button>
-<button onclick="increaseFontSize()">A+</button>
+                    <button
+                        class="actionBtn"
+                        onclick="pinDiary()"
+                    >
+                        📌 Pin Diary
+                    </button>
 
-<button onclick="clearEditor()">🗑</button>
+                    <div
+                        class="msg"
+                        id="msg"
+                    ></div>
 
-</div>
+                </div>
 
-<div id="editor" contenteditable="true"></div>
+                <button
+                    class="saveBtn"
+                    onclick="saveDiary()"
+                >
+                    💾
+                </button>
 
-<div class="counter" id="counter">
-0 Characters
-</div>
+            </div>
 
-<button class="actionBtn" onclick="addFavorite()">
-⭐ Add Favorite
-</button>
+            <!-- ================= SAVED ================= -->
 
-<button class="actionBtn" onclick="pinDiary()">
-📌 Pin Diary
-</button>
+            <div
+                id="saved"
+                class="page"
+            >
 
-<div class="msg" id="msg"></div>
+                <div class="card">
 
-</div>
+                    <h2>
+                        📚 Saved Diaries
+                    </h2>
 
-<button class="saveBtn" onclick="saveDiary()">💾</button>
+                    <input
+                        type="text"
+                        placeholder="Search Diaries..."
+                        onkeyup="searchDiary(this.value)"
+                    >
 
-</div>
+                    <div
+                        class="list"
+                        id="diaryList"
+                    ></div>
 
-<!-- SAVED -->
+                </div>
 
-<div id="saved" class="page">
+            </div>
 
-<div class="card">
+            <!-- ================= DASHBOARD ================= -->
 
-<h2>📚 Saved Diaries</h2>
+            <div
+                id="dashboard"
+                class="page"
+            >
 
-<input type="text"
-placeholder="Search Diaries..."
-onkeyup="searchDiary(this.value)">
+                <div class="card">
 
-<div class="list" id="diaryList"></div>
+                    <h2>
+                        📊 Dashboard
+                    </h2>
 
-</div>
+                    <div class="stats">
 
-</div>
+                        <div class="stat">
 
-<!-- DASHBOARD -->
+                            <h1 id="totalDiary">
+                                0
+                            </h1>
 
-<div id="dashboard" class="page">
+                            <p>
+                                Total Diaries
+                            </p>
 
-<div class="card">
+                        </div>
 
-<h2>📊 Dashboard</h2>
+                        <div class="stat">
 
-<div class="stats">
+                            <h1 id="favoriteCount">
+                                0
+                            </h1>
 
-<div class="stat">
-<h1 id="totalDiary">0</h1>
-<p>Total Diaries</p>
-</div>
+                            <p>
+                                Favorites
+                            </p>
 
-<div class="stat">
-<h1 id="favoriteCount">0</h1>
-<p>Favorites</p>
-</div>
+                        </div>
 
-<div class="stat">
-<h1 id="wordCount">0</h1>
-<p>Total Characters</p>
-</div>
+                        <div class="stat">
 
-</div>
+                            <h1 id="wordCount">
+                                0
+                            </h1>
 
-<h2 style="margin-top:30px;">📅 Calendar</h2>
+                            <p>
+                                Total Characters
+                            </p>
 
-<div id="calendar" class="calendar"></div>
+                        </div>
 
-</div>
+                    </div>
 
-</div>
+                    <h2 style="margin-top:30px;">
+                        📅 Calendar
+                    </h2>
 
-<!-- FAVORITE -->
+                    <div
+                        id="calendar"
+                        class="calendar"
+                    ></div>
 
-<div id="favorite" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>⭐ Favorite Diaries</h2>
+            <!-- ================= FAVORITE ================= -->
 
-<div class="list" id="favoriteList"></div>
+            <div
+                id="favorite"
+                class="page"
+            >
 
-</div>
+                <div class="card">
 
-</div>
+                    <h2>
+                        ⭐ Favorite Diaries
+                    </h2>
 
-<!-- TRASH -->
+                    <div
+                        class="list"
+                        id="favoriteList"
+                    ></div>
 
-<div id="trash" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>🗑 Trash</h2>
+            <!-- ================= TRASH ================= -->
 
-<div class="list" id="trashList"></div>
+            <div
+                id="trash"
+                class="page"
+            >
 
-</div>
+                <div class="card">
 
-</div>
+                    <h2>
+                        🗑 Trash
+                    </h2>
 
-<!-- PROFILE -->
+                    <div
+                        class="list"
+                        id="trashList"
+                    ></div>
 
-<div id="profile" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>👤 Edit Profile</h2>
+            <!-- ================= PROFILE ================= -->
 
-<div class="profileImageBox">
+            <div
+                id="profile"
+                class="page"
+            >
 
-<label for="profilePhotoInput">
+                <div class="card">
 
-<img id="profilePreview"
-src="https://cdn-icons-png.flaticon.com/512/149/149071.png">
+                    <h2>
+                        👤 Edit Profile
+                    </h2>
 
-<div class="uploadText">
-📷 Change Photo
-</div>
+                    <div class="profileImageBox">
 
-</label>
+                        <label for="profilePhotoInput">
 
-<input type="file"
-id="profilePhotoInput"
-accept="image/*"
-onchange="uploadProfilePhoto(event)"
-hidden>
+                            <img
+                                id="profilePreview"
+                                src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                            >
 
-</div>
+                            <div class="uploadText">
+                                📷 Change Photo
+                            </div>
 
-<input type="text"
-id="editName"
-placeholder="New Name">
+                        </label>
 
-<input type="password"
-id="editPass"
-placeholder="New Password">
+                        <input
+                            type="file"
+                            id="profilePhotoInput"
+                            accept="image/*"
+                            onchange="uploadProfilePhoto(event)"
+                            hidden
+                        >
 
-<button class="loginBtn" onclick="saveProfile()">
-Save Profile
-</button>
+                    </div>
 
-</div>
+                    <input
+                        type="text"
+                        id="editName"
+                        placeholder="New Name"
+                    >
 
-</div>
+                    <input
+                        type="password"
+                        id="editPass"
+                        placeholder="New Password"
+                    >
 
-<!-- VOICE -->
+                    <button
+                        class="loginBtn"
+                        onclick="saveProfile()"
+                    >
+                        Save Profile
+                    </button>
 
-<div id="voice" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>🎤 Voice Diary</h2>
+            <!-- ================= VOICE ================= -->
 
-<button class="loginBtn" onclick="startVoice()">
-Start Voice Typing
-</button>
+            <div
+                id="voice"
+                class="page"
+            >
 
-</div>
+                <div class="card">
 
-</div>
+                    <h2>
+                        🎤 Voice Diary
+                    </h2>
 
-<!-- PHOTO -->
+                    <button
+                        class="loginBtn"
+                        onclick="startVoice()"
+                    >
+                        Start Voice Typing
+                    </button>
 
-<div id="photo" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>🖼 Photo Diary</h2>
+            <!-- ================= PHOTO ================= -->
 
-<input type="file"
-accept="image/*"
-onchange="uploadPhoto(event)">
+            <div
+                id="photo"
+                class="page"
+            >
 
-<img id="photoPreview">
+                <div class="card">
 
-</div>
+                    <h2>
+                        🖼 Photo Diary
+                    </h2>
 
-</div>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onchange="uploadPhoto(event)"
+                    >
 
-<!-- ================= MUSIC PAGE ================= -->
+                    <img
+                        id="photoPreview"
+                    >
 
-<div id="music" class="page">
+                </div>
 
-<div class="card">
+            </div>
 
-<h2>🎵 My Music</h2>
+            <!-- ================= MUSIC ================= -->
 
-<div class="musicPlayer">
+            <div
+                id="music"
+                class="page"
+            >
 
-<div class="musicTitle">
-🎧 Music Player
-</div>
+                <div class="card">
 
-<div class="musicNow" id="musicNow">
-No song selected
-</div>
+                    <h2>
+                        🎵 My Music
+                    </h2>
 
-<audio id="bgMusic"></audio>
+                    <div class="musicPlayer">
 
-<input
-type="range"
-id="musicProgress"
-class="musicProgress"
-min="0"
-max="100"
-value="0"
-oninput="seekMusic(this.value)"
->
+                        <div class="musicTitle">
+                            🎧 Music Player
+                        </div>
 
-<div class="musicTime">
-<span id="currentTime">0:00</span>
-<span id="duration">0:00</span>
-</div>
+                        <div
+                            class="musicNow"
+                            id="musicNow"
+                        >
+                            No song selected
+                        </div>
 
-<div class="musicControls">
+                        <audio id="bgMusic"></audio>
 
-<button onclick="previousSong()">⏮</button>
+                        <input
+                            type="range"
+                            id="musicProgress"
+                            class="musicProgress"
+                            min="0"
+                            max="100"
+                            value="0"
+                            oninput="seekMusic(this.value)"
+                        >
 
-<button
-class="playBtn"
-id="musicPlayBtn"
-onclick="toggleMusic()">
-▶️
-</button>
+                        <div class="musicTime">
 
-<button onclick="nextSong()">⏭</button>
+                            <span id="currentTime">
+                                0:00
+                            </span>
 
-</div>
+                            <span id="duration">
+                                0:00
+                            </span>
 
-<div style="display:flex;align-items:center;gap:10px;">
+                        </div>
 
-<span>🔊</span>
+                        <div class="musicControls">
 
-<input
-type="range"
-id="musicVolume"
-class="musicVolume"
-min="0"
-max="1"
-step="0.01"
-value="0.8"
-oninput="changeVolume(this.value)"
->
+                            <button onclick="previousSong()">
+                                ⏮
+                            </button>
 
-</div>
+                            <button
+                                class="playBtn"
+                                id="musicPlayBtn"
+                                onclick="toggleMusic()"
+                            >
+                                ▶️
+                            </button>
 
-<div class="musicAdd">
+                            <button onclick="nextSong()">
+                                ⏭
+                            </button>
 
-<label for="songInput">
-➕ Add Song
-</label>
+                        </div>
 
-<input
-type="file"
-id="songInput"
-accept="audio/*"
-multiple
-onchange="addSongs(event)"
->
+                        <div
+                            style="
+                                display:flex;
+                                align-items:center;
+                                gap:10px;
+                            "
+                        >
 
-</div>
+                            <span>
+                                🔊
+                            </span>
 
-<div class="songList" id="songList"></div>
+                            <input
+                                type="range"
+                                id="musicVolume"
+                                class="musicVolume"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value="0.8"
+                                oninput="changeVolume(this.value)"
+                            >
 
-</div>
+                        </div>
 
-</div>
+                        <div class="musicAdd">
 
-</div>
+                            <label for="songInput">
+                                ➕ Add Song
+                            </label>
 
-</div>
+                            <input
+                                type="file"
+                                id="songInput"
+                                accept="audio/*"
+                                multiple
+                                onchange="addSongs(event)"
+                            >
 
-</div>
+                        </div>
 
-<script>
+                        <div
+                            class="songList"
+                            id="songList"
+                        ></div>
 
-/* ================= BASIC ================= */
+                    </div>
 
-document.addEventListener('keypress',function(e){
+                </div>
 
-if(e.key==='Enter' &&
-document.getElementById('loginPage').style.display!=='none'){
+            </div>
 
-login();
+        </div>
 
-}
+    </div>
 
-});
+    <!-- ================= INSTALL BUTTON ================= -->
 
-const editor=document.getElementById('editor');
+    <button id="installBtn">
+        📲 Install My Diary
+    </button>
 
-if(localStorage.getItem('user')){
-
-document.getElementById('loginPage').style.display='none';
-
-document.getElementById('topUserText').innerText=
-localStorage.getItem('user');
-
-}
-
-document.getElementById('date').value=
-new Date().toISOString().split('T')[0];
-
-
-/* ================= LOGIN ================= */
-
-function login(){
-
-let name=document.getElementById('loginName').value.trim();
-
-let pass=document.getElementById('loginPass').value;
-
-if(name==='' || pass.length<8){
-
-alert('Enter valid details');
-
-return;
-
-}
-
-localStorage.setItem('user',name);
-
-localStorage.setItem('password',btoa(pass));
-
-document.getElementById('loginPage').style.display='none';
-
-document.getElementById('topUserText').innerText=name;
-
-}
-
-
-/* ================= PAGE ================= */
-
-function openPage(id){
-
-document.querySelectorAll('.page').forEach(page=>{
-page.classList.remove('show');
-});
-
-document.getElementById(id).classList.add('show');
-
-if(id==='saved') showList();
-
-if(id==='dashboard') loadDashboard();
-
-if(id==='favorite') loadFavorites();
-
-if(id==='trash') loadTrash();
-
-if(id==='music') loadSongs();
-
-}
-
-
-/* ================= DIARY ================= */
-
-function diaryKey(){
-
-return 'diary_'+
-localStorage.getItem('user')+'_'
-+document.getElementById('date').value;
-
-}
-
-function saveDiary(){
-
-let txt=editor.innerHTML.trim();
-
-if(txt==='' || txt==='<br>'){
-
-showMsg('Write something first');
-
-return;
-
-}
-
-localStorage.setItem(
-diaryKey(),
-btoa(unescape(encodeURIComponent(txt)))
-);
-
-showMsg('Diary Saved ✅');
-
-showList();
-
-updateCounter();
-
-}
-
-function loadDiary(){
-
-let data=localStorage.getItem(diaryKey());
-
-try{
-
-editor.innerHTML=
-data
-?decodeURIComponent(escape(atob(data)))
-:'';
-
-}catch{
-
-editor.innerHTML='';
-
-}
-
-updateCounter();
-
-renderPhotos();
-
-}
-
-function updateCounter(){
-
-document.getElementById('counter').innerText=
-editor.innerText.length+' Characters';
-
-}
-
-editor.addEventListener('input',updateCounter);
-
-function showMsg(text){
-
-document.getElementById('msg').innerText=text;
-
-setTimeout(()=>{
-document.getElementById('msg').innerText='';
-},2000);
-
-}
-
-
-/* ================= SAVED ================= */
-
-function showList(){
-
-let list=document.getElementById('diaryList');
-
-list.innerHTML='';
-
-Object.keys(localStorage)
-.filter(key=>
-key.startsWith('diary_'+localStorage.getItem('user'))
-)
-.reverse()
-.forEach(key=>{
-
-let date=key.split('_')[2];
-
-list.innerHTML+=`
-
-<div class="item"
-style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-
-<div
-onclick="openDiary('${date}')"
-style="cursor:pointer;font-weight:600;flex:1;">
-
-📚 ${date}
-
-</div>
-
-<button
-onclick="deleteDiary('${key}')"
-style="
-width:auto;
-padding:8px 14px;
-border:none;
-border-radius:10px;
-background:#ef4444;
-color:white;
-font-size:13px;
-cursor:pointer;
-">
-
-🗑 Delete
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-function openDiary(date){
-
-openPage('home');
-
-document.getElementById('date').value=date;
-
-loadDiary();
-
-}
-
-function searchDiary(text){
-
-let list=document.getElementById('diaryList');
-
-list.innerHTML='';
-
-Object.keys(localStorage).forEach(key=>{
-
-if(key.startsWith('diary_'+localStorage.getItem('user'))){
-
-let data=
-decodeURIComponent(
-escape(atob(localStorage.getItem(key)))
-);
-
-if(
-data.replace(/<[^>]*>/g,'')
-.toLowerCase()
-.includes(text.toLowerCase())
-){
-
-let date=key.split('_')[2];
-
-list.innerHTML+=`
-
-<div class="item"
-onclick="openDiary('${date}')">
-
-📅 ${date}
-
-</div>
-
-`;
-
-}
-
-}
-
-});
-
-}
-
-
-/* ================= FAVORITE ================= */
-
-function addFavorite(){
-
-let key='fav_'+diaryKey();
-
-if(localStorage.getItem(key)){
-
-showMsg('Already Favorite ⭐');
-
-return;
-
-}
-
-localStorage.setItem(key,editor.innerHTML);
-
-showMsg('Added To Favorites ⭐');
-
-loadFavorites();
-
-}
-
-function loadFavorites(){
-
-let list=document.getElementById('favoriteList');
-
-list.innerHTML='';
-
-Object.keys(localStorage).forEach(key=>{
-
-if(key.startsWith(
-'fav_diary_'+localStorage.getItem('user')
-)){
-
-list.innerHTML+=`
-
-<div class="item">
-
-⭐ ${key.replace('fav_diary_','')}
-
-</div>
-
-`;
-
-}
-
-});
-
-}
-
-
-/* ================= DASHBOARD ================= */
-
-function loadDashboard(){
-
-let diaries=
-Object.keys(localStorage)
-.filter(key=>
-key.startsWith('diary_'+localStorage.getItem('user'))
-);
-
-document.getElementById('totalDiary').innerText=
-diaries.length;
-
-document.getElementById('favoriteCount').innerText=
-Object.keys(localStorage)
-.filter(key=>
-key.startsWith(
-'fav_diary_'+localStorage.getItem('user')
-)
-)
-.length;
-
-let chars=0;
-
-diaries.forEach(key=>{
-
-chars+=
-decodeURIComponent(
-escape(atob(localStorage.getItem(key)))
-).length;
-
-});
-
-document.getElementById('wordCount').innerText=chars;
-
-renderCalendar();
-
-}
-
-
-/* ================= PROFILE ================= */
-
-function saveProfile(){
-
-let newName=
-document.getElementById('editName').value;
-
-let newPass=
-document.getElementById('editPass').value;
-
-if(newName!==''){
-
-localStorage.setItem('user',newName);
-
-document.getElementById('topUserText').innerText=
-newName;
-
-}
-
-if(newPass.length>=8){
-
-localStorage.setItem(
-'password',
-btoa(newPass)
-);
-
-}
-
-alert('Profile Updated ✅');
-
-}
-
-function uploadProfilePhoto(event){
-
-let file=event.target.files[0];
-
-if(!file)return;
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
-localStorage.setItem(
-'profilePhoto',
-reader.result
-);
-
-document.getElementById('profilePreview').src=
-reader.result;
-
-document.getElementById('topProfileImg').src=
-reader.result;
-
-};
-
-reader.readAsDataURL(file);
-
-}
-
-
-/* ================= ONLOAD ================= */
-
-window.onload=function(){
-
-let savedTheme=
-localStorage.getItem('theme');
-
-if(savedTheme==='light'){
-
-document.body.classList.add('lightTheme');
-
-}
-
-let savedPhoto=
-localStorage.getItem('profilePhoto');
-
-if(savedPhoto){
-
-document.getElementById('profilePreview').src=
-savedPhoto;
-
-document.getElementById('topProfileImg').src=
-savedPhoto;
-
-}
-
-if(localStorage.getItem('user')){
-
-document.getElementById('topUserText').innerText=
-localStorage.getItem('user');
-
-}
-
-loadDiary();
-
-loadSongs();
-
-};
-
-
-/* ================= MOOD ================= */
-
-function addMood(mood){
-
-editor.innerHTML+=
-'<br>'+mood+'<br>';
-
-updateCounter();
-
-}
-
-
-/* ================= VOICE ================= */
-
-function startVoice(){
-
-if(!('webkitSpeechRecognition' in window)){
-
-alert('Voice Recognition Not Supported');
-
-return;
-
-}
-
-let recognition=
-new webkitSpeechRecognition();
-
-recognition.lang='en-US';
-
-recognition.start();
-
-recognition.onresult=function(event){
-
-editor.innerHTML+=
-' '+event.results[0][0].transcript;
-
-updateCounter();
-
-openPage('home');
-
-};
-
-}
-
-
-/* ================= PHOTO ================= */
-
-function uploadPhoto(event){
-
-let file=event.target.files[0];
-
-if(!file)return;
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
-let img=
-document.getElementById('photoPreview');
-
-img.src=reader.result;
-
-img.style.display='block';
-
-};
-
-reader.readAsDataURL(file);
-
-}
-
-
-/* ================= THEME ================= */
-
-function toggleTheme(){
-
-document.body.classList.toggle('lightTheme');
-
-if(document.body.classList.contains('lightTheme')){
-
-localStorage.setItem('theme','light');
-
-}else{
-
-localStorage.setItem('theme','dark');
-
-}
-
-}
-
-
-/* ================= LOGOUT ================= */
-
-function logout(){
-
-localStorage.removeItem('user');
-
-localStorage.removeItem('password');
-
-location.reload();
-
-}
-
-
-/* ================= AUTO SAVE ================= */
-
-setInterval(()=>{
-
-let txt=editor.innerHTML.trim();
-
-if(txt!=='' && txt!=='<br>'){
-
-localStorage.setItem(
-diaryKey(),
-btoa(unescape(encodeURIComponent(txt)))
-);
-
-}
-
-},4000);
-
-
-/* ================= MULTI PHOTOS ================= */
-
-function photoKey(){
-
-return 'photos_'+diaryKey();
-
-}
-
-function addPhotos(event){
-
-let files=event.target.files;
-
-let arr=
-JSON.parse(
-localStorage.getItem(photoKey()) || "[]"
-);
-
-Array.from(files).forEach(file=>{
-
-if(file.size>2000000){
-
-alert("Image too large");
-
-return;
-
-}
-
-let reader=new FileReader();
-
-reader.onload=function(){
-
-arr.push(reader.result);
-
-localStorage.setItem(
-photoKey(),
-JSON.stringify(arr)
-);
-
-renderPhotos();
-
-};
-
-reader.readAsDataURL(file);
-
-});
-
-}
-
-function renderPhotos(){
-
-let box=
-document.getElementById("photoGallery");
-
-let arr=
-JSON.parse(
-localStorage.getItem(photoKey()) || "[]"
-);
-
-box.innerHTML='';
-
-arr.forEach((img,index)=>{
-
-box.innerHTML+=`
-
-<div style="
-position:relative;
-width:90px;
-height:90px;
-">
-
-<img
-src="${img}"
-style="
-width:90px;
-height:90px;
-object-fit:cover;
-border-radius:14px;
-border:2px solid rgba(255,255,255,0.15);
-">
-
-<button
-onclick="deletePhoto(${index})"
-style="
-position:absolute;
-top:-8px;
-right:-8px;
-width:24px;
-height:24px;
-border:none;
-border-radius:50%;
-background:#ef4444;
-color:white;
-font-size:14px;
-font-weight:bold;
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-">
-
-✕
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-function deletePhoto(index){
-
-let arr=
-JSON.parse(
-localStorage.getItem(photoKey()) || "[]"
-);
-
-arr.splice(index,1);
-
-localStorage.setItem(
-photoKey(),
-JSON.stringify(arr)
-);
-
-renderPhotos();
-
-showMsg("Photo Deleted 🗑");
-
-}
-
-
-/* ================= SUGGESTION ================= */
-
-function suggestDiary(){
-
-let suggestions=[
-
-"Today I learned something new about...",
-
-"A moment that made me happy today was...",
-
-"Something I want to improve tomorrow is...",
-
-"One thing I am grateful for is...",
-
-"My biggest achievement today was..."
-
-];
-
-document.getElementById("suggestBox").innerText=
-suggestions[
-Math.floor(Math.random()*suggestions.length)
-];
-
-}
-
-
-/* ================= TRASH ================= */
-
-function deleteDiary(key){
-
-if(confirm("Delete this diary?")){
-
-localStorage.setItem(
-"trash_"+key,
-localStorage.getItem(key)
-);
-
-localStorage.removeItem(key);
-
-showMsg("Diary Deleted 🗑");
-
-showList();
-
-}
-
-}
-
-function restoreDiary(key){
-
-localStorage.setItem(
-key,
-localStorage.getItem("trash_"+key)
-);
-
-localStorage.removeItem("trash_"+key);
-
-showList();
-
-loadTrash();
-
-}
-
-function loadTrash(){
-
-let list=
-document.getElementById("trashList");
-
-list.innerHTML='';
-
-Object.keys(localStorage)
-.filter(key=>
-key.startsWith("trash_diary_")
-)
-.forEach(key=>{
-
-let originalKey=
-key.replace("trash_","");
-
-list.innerHTML+=`
-
-<div class="item">
-
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-flex-wrap:wrap;
-">
-
-<div style="font-weight:600;flex:1;">
-
-🗑 ${originalKey}
-
-</div>
-
-<div style="display:flex;gap:8px;">
-
-<button
-onclick="restoreDiary('${originalKey}')"
-style="
-width:auto;
-padding:7px 14px;
-border:none;
-border-radius:10px;
-background:#22c55e;
-color:white;
-font-size:12px;
-cursor:pointer;
-">
-
-↩ Restore
-
-</button>
-
-<button
-onclick="permanentDelete('${key}')"
-style="
-width:auto;
-padding:7px 14px;
-border:none;
-border-radius:10px;
-background:#ef4444;
-color:white;
-font-size:12px;
-cursor:pointer;
-">
-
-🗑 Delete
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-}
-
-function permanentDelete(key){
-
-if(confirm("Delete permanently?")){
-
-localStorage.removeItem(key);
-
-loadTrash();
-
-showMsg("Permanently Deleted ❌");
-
-}
-
-}
-
-
-/* ================= PIN ================= */
-
-function pinDiary(){
-
-let key="pin_"+diaryKey();
-
-if(localStorage.getItem(key)){
-
-showMsg("Already Pinned 📌");
-
-return;
-
-}
-
-localStorage.setItem(key,"true");
-
-showMsg("Diary Pinned 📌");
-
-}
-
-
-/* ================= CALENDAR ================= */
-
-function renderCalendar(){
-
-let box=
-document.getElementById("calendar");
-
-let today=new Date();
-
-let year=today.getFullYear();
-
-let month=today.getMonth();
-
-let days=
-new Date(year,month+1,0).getDate();
-
-box.innerHTML='';
-
-for(let i=1;i<=days;i++){
-
-let d=
-`${year}-${String(month+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
-
-box.innerHTML+=`
-
-<button onclick="openDiary('${d}')">
-${i}
-</button>
-
-`;
-
-}
-
-}
-
-
-/* ================= EDITOR ================= */
-
-function format(command){
-
-editor.focus();
-
-document.execCommand(
-command,
-false,
-null
-);
-
-updateCounter();
-
-}
-
-function addLink(){
-
-let url=prompt("Enter URL");
-
-if(url){
-
-document.execCommand(
-'createLink',
-false,
-url
-);
-
-}
-
-}
-
-function changeColor(){
-
-editor.focus();
-
-let color=
-prompt("Enter color name or hex code");
-
-if(color){
-
-document.execCommand(
-'styleWithCSS',
-false,
-true
-);
-
-document.execCommand(
-'foreColor',
-false,
-color
-);
-
-}
-
-}
-
-function clearEditor(){
-
-if(confirm("Clear editor?")){
-
-editor.innerHTML='';
-
-updateCounter();
-
-}
-
-}
-
-
-/* ================= FONT SIZE ================= */
-
-let currentFontSize=3;
-
-function increaseFontSize(){
-
-if(currentFontSize<7){
-
-currentFontSize++;
-
-editor.focus();
-
-document.execCommand(
-'fontSize',
-false,
-currentFontSize
-);
-
-}
-
-}
-
-function decreaseFontSize(){
-
-if(currentFontSize>1){
-
-currentFontSize--;
-
-editor.focus();
-
-document.execCommand(
-'fontSize',
-false,
-currentFontSize
-);
-
-}
-
-}
-
-
-/* =====================================================
-                MUSIC PLAYER
-===================================================== */
-
-let songs=[];
-let currentSongIndex=-1;
-
-const music=
-document.getElementById('bgMusic');
-
-const musicNow=
-document.getElementById('musicNow');
-
-const musicPlayBtn=
-document.getElementById('musicPlayBtn');
-
-const musicProgress=
-document.getElementById('musicProgress');
-
-const currentTimeEl=
-document.getElementById('currentTime');
-
-const durationEl=
-document.getElementById('duration');
-
-
-/* LOAD SONGS */
-
-function loadSongs(){
-
-try{
-
-songs=
-JSON.parse(
-localStorage.getItem('myDiarySongs') || '[]'
-);
-
-}catch{
-
-songs=[];
-
-}
-
-renderSongList();
-
-}
-
-
-/* ADD SONG */
-
-function addSongs(event){
-
-let files=
-Array.from(event.target.files);
-
-if(!files.length)return;
-
-files.forEach(file=>{
-
-if(!file.type.startsWith('audio/')){
-
-alert(file.name+' is not an audio file');
-
-return;
-
-}
-
-let reader=
-new FileReader();
-
-reader.onload=function(e){
-
-songs.push({
-
-name:file.name,
-
-data:e.target.result
-
-});
-
-localStorage.setItem(
-'myDiarySongs',
-JSON.stringify(songs)
-);
-
-renderSongList();
-
-};
-
-reader.readAsDataURL(file);
-
-});
-
-event.target.value='';
-
-}
-
-
-/* SONG LIST */
-
-function renderSongList(){
-
-let list=
-document.getElementById('songList');
-
-list.innerHTML='';
-
-if(songs.length===0){
-
-list.innerHTML=`
-
-<div style="
-text-align:center;
-padding:20px;
-opacity:0.7;
-">
-
-🎵 No songs added yet.<br>
-Click "Add Song" to add music.
-
-</div>
-
-`;
-
-return;
-
-}
-
-songs.forEach((song,index)=>{
-
-let active=
-index===currentSongIndex
-?'active'
-:'';
-
-list.innerHTML+=`
-
-<div class="songItem ${active}">
-
-<div
-class="songName"
-onclick="playSong(${index})"
-title="${escapeHtml(song.name)}">
-
-🎵 ${escapeHtml(song.name)}
-
-</div>
-
-<button
-class="songDelete"
-onclick="deleteSong(${index})">
-
-✕
-
-</button>
-
-</div>
-
-`;
-
-});
-
-}
-
-
-/* SAFE TEXT */
-
-function escapeHtml(text){
-
-return text
-.replace(/&/g,'&amp;')
-.replace(/</g,'&lt;')
-.replace(/>/g,'&gt;')
-.replace(/"/g,'&quot;')
-.replace(/'/g,'&#039;');
-
-}
-
-
-/* PLAY SONG */
-
-function playSong(index){
-
-if(!songs[index])return;
-
-currentSongIndex=index;
-
-music.src=songs[index].data;
-
-music.load();
-
-music.play()
-.then(()=>{
-
-musicPlayBtn.innerText='⏸';
-
-})
-.catch(()=>{
-
-alert(
-'Browser could not play this song.'
-);
-
-});
-
-musicNow.innerText=
-'🎵 '+songs[index].name;
-
-renderSongList();
-
-}
-
-
-/* PLAY / PAUSE */
-
-function toggleMusic(){
-
-if(!songs.length){
-
-alert('First add a song 🎵');
-
-openPage('music');
-
-return;
-
-}
-
-if(!music.src){
-
-playSong(0);
-
-return;
-
-}
-
-if(music.paused){
-
-music.play();
-
-musicPlayBtn.innerText='⏸';
-
-}else{
-
-music.pause();
-
-musicPlayBtn.innerText='▶️';
-
-}
-
-}
-
-
-/* NEXT */
-
-function nextSong(){
-
-if(!songs.length)return;
-
-if(currentSongIndex===-1){
-
-playSong(0);
-
-return;
-
-}
-
-currentSongIndex=
-(currentSongIndex+1)%songs.length;
-
-playSong(currentSongIndex);
-
-}
-
-
-/* PREVIOUS */
-
-function previousSong(){
-
-if(!songs.length)return;
-
-if(currentSongIndex===-1){
-
-playSong(0);
-
-return;
-
-}
-
-currentSongIndex=
-(currentSongIndex-1+songs.length)
-%songs.length;
-
-playSong(currentSongIndex);
-
-}
-
-
-/* DELETE SONG */
-
-function deleteSong(index){
-
-if(!confirm('Delete this song?'))return;
-
-if(index===currentSongIndex){
-
-music.pause();
-
-music.removeAttribute('src');
-
-music.load();
-
-currentSongIndex=-1;
-
-musicNow.innerText='No song selected';
-
-musicPlayBtn.innerText='▶️';
-
-}
-
-songs.splice(index,1);
-
-localStorage.setItem(
-'myDiarySongs',
-JSON.stringify(songs)
-);
-
-if(currentSongIndex>index){
-
-currentSongIndex--;
-
-}
-
-renderSongList();
-
-}
-
-
-/* VOLUME */
-
-function changeVolume(value){
-
-music.volume=value;
-
-localStorage.setItem(
-'musicVolume',
-value
-);
-
-}
-
-
-/* PROGRESS */
-
-music.addEventListener('loadedmetadata',function(){
-
-musicProgress.max=
-music.duration || 100;
-
-durationEl.innerText=
-formatTime(music.duration);
-
-});
-
-music.addEventListener('timeupdate',function(){
-
-if(!music.duration)return;
-
-musicProgress.value=
-music.currentTime;
-
-currentTimeEl.innerText=
-formatTime(music.currentTime);
-
-});
-
-function seekMusic(value){
-
-if(music.duration){
-
-music.currentTime=value;
-
-}
-
-}
-
-
-/* AUTO NEXT */
-
-music.addEventListener('ended',function(){
-
-nextSong();
-
-});
-
-
-/* TIME FORMAT */
-
-function formatTime(seconds){
-
-if(!seconds || isNaN(seconds)){
-
-return '0:00';
-
-}
-
-let min=
-Math.floor(seconds/60);
-
-let sec=
-Math.floor(seconds%60);
-
-return min+':'+
-String(sec).padStart(2,'0');
-
-}
-
-
-/* RESTORE VOLUME */
-
-let savedVolume=
-localStorage.getItem('musicVolume');
-
-if(savedVolume!==null){
-
-music.volume=
-parseFloat(savedVolume);
-
-document.getElementById('musicVolume').value=
-savedVolume;
-
-}else{
-
-music.volume=0.8;
-
-}
-   
     <script>
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('Service Worker Registered ✅'))
-            .catch(err => console.error('SW Error:', err));
-    });
-}
-</script>
+        /* =====================================================
+                            BASIC
+        ===================================================== */
 
- <!-- ================= PWA INSTALL BUTTON ================= -->
+        const editor = document.getElementById("editor");
 
-<button id="installBtn"
-    style="
-        display:none;
-        position:fixed;
-        bottom:30px;
-        right:30px;
-        z-index:99999;
-        width:auto;
-        padding:15px 22px;
-        border:none;
-        border-radius:18px;
-        background:linear-gradient(135deg,#00b4db,#0083b0);
-        color:white;
-        font-weight:600;
-        font-size:15px;
-        box-shadow:0 10px 25px rgba(0,0,0,.4);
-        cursor:pointer;
-    ">
-    📲 Install My Diary
-</button>
+        document.addEventListener("keypress", function (e) {
+            if (
+                e.key === "Enter" &&
+                document.getElementById("loginPage").style.display !== "none"
+            ) {
+                login();
+            }
+        });
+
+        if (localStorage.getItem("user")) {
+            document.getElementById("loginPage").style.display = "none";
+
+            document.getElementById("topUserText").innerText =
+                localStorage.getItem("user");
+        }
+
+        document.getElementById("date").value =
+            new Date().toISOString().split("T")[0];
 
 
-<script>
+        /* =====================================================
+                            LOGIN
+        ===================================================== */
 
-let deferredPrompt = null;
+        function login() {
 
-const installBtn =
-    document.getElementById("installBtn");
+            const name =
+                document.getElementById("loginName").value.trim();
 
+            const pass =
+                document.getElementById("loginPass").value;
 
-/* ================= INSTALL PROMPT ================= */
+            if (name === "" || pass.length < 8) {
+                alert("Enter valid details");
+                return;
+            }
 
-window.addEventListener("beforeinstallprompt", (event) => {
+            localStorage.setItem("user", name);
+            localStorage.setItem("password", btoa(pass));
 
-    console.log("✅ PWA install prompt available");
+            document.getElementById("loginPage").style.display = "none";
 
-    event.preventDefault();
-
-    deferredPrompt = event;
-
-    if (installBtn) {
-        installBtn.style.display = "block";
-    }
-
-});
-
-
-/* ================= INSTALL BUTTON ================= */
-
-if (installBtn) {
-
-    installBtn.addEventListener("click", async () => {
-
-        if (!deferredPrompt) {
-
-            alert(
-                "Install option is not available yet.\n\n" +
-                "Please open My Diary using Chrome or Edge " +
-                "on HTTPS or localhost."
-            );
-
-            return;
+            document.getElementById("topUserText").innerText = name;
         }
 
 
-        deferredPrompt.prompt();
+        /* =====================================================
+                            PAGE
+        ===================================================== */
+
+        function openPage(id) {
+
+            document.querySelectorAll(".page").forEach(page => {
+                page.classList.remove("show");
+            });
+
+            const target = document.getElementById(id);
+
+            if (target) {
+                target.classList.add("show");
+            }
+
+            if (id === "saved") {
+                showList();
+            }
+
+            if (id === "dashboard") {
+                loadDashboard();
+            }
+
+            if (id === "favorite") {
+                loadFavorites();
+            }
+
+            if (id === "trash") {
+                loadTrash();
+            }
+
+            if (id === "music") {
+                loadSongs();
+            }
+        }
 
 
-        const result =
-            await deferredPrompt.userChoice;
+        /* =====================================================
+                            DIARY KEY
+        ===================================================== */
+
+        function diaryKey() {
+
+            return (
+                "diary_" +
+                localStorage.getItem("user") +
+                "_" +
+                document.getElementById("date").value
+            );
+        }
 
 
-        console.log(
-            "Install result:",
-            result.outcome
+        /* =====================================================
+                            SAVE DIARY
+        ===================================================== */
+
+        function saveDiary() {
+
+            const txt = editor.innerHTML.trim();
+
+            if (txt === "" || txt === "<br>") {
+                showMsg("Write something first");
+                return;
+            }
+
+            localStorage.setItem(
+                diaryKey(),
+                btoa(unescape(encodeURIComponent(txt)))
+            );
+
+            showMsg("Diary Saved ✅");
+
+            showList();
+
+            updateCounter();
+        }
+
+
+        /* =====================================================
+                            LOAD DIARY
+        ===================================================== */
+
+        function loadDiary() {
+
+            if (!localStorage.getItem("user")) {
+                return;
+            }
+
+            const data =
+                localStorage.getItem(diaryKey());
+
+            try {
+
+                editor.innerHTML =
+                    data
+                        ? decodeURIComponent(escape(atob(data)))
+                        : "";
+
+            } catch (error) {
+
+                editor.innerHTML = "";
+
+            }
+
+            updateCounter();
+            renderPhotos();
+        }
+
+
+        /* =====================================================
+                            COUNTER
+        ===================================================== */
+
+        function updateCounter() {
+
+            document.getElementById("counter").innerText =
+                editor.innerText.length + " Characters";
+        }
+
+        editor.addEventListener("input", updateCounter);
+
+
+        /* =====================================================
+                            MESSAGE
+        ===================================================== */
+
+        function showMsg(text) {
+
+            const msg =
+                document.getElementById("msg");
+
+            msg.innerText = text;
+
+            setTimeout(() => {
+                msg.innerText = "";
+            }, 2000);
+        }
+
+
+        /* =====================================================
+                            SAVED DIARIES
+        ===================================================== */
+
+        function showList() {
+
+            const list =
+                document.getElementById("diaryList");
+
+            list.innerHTML = "";
+
+            const user =
+                localStorage.getItem("user");
+
+            if (!user) {
+                return;
+            }
+
+            Object.keys(localStorage)
+                .filter(key =>
+                    key.startsWith("diary_" + user + "_")
+                )
+                .reverse()
+                .forEach(key => {
+
+                    const date =
+                        key.substring(
+                            ("diary_" + user + "_").length
+                        );
+
+                    list.innerHTML += `
+                        <div
+                            class="item"
+                            style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                                gap:10px;
+                            "
+                        >
+
+                            <div
+                                onclick="openDiary('${date}')"
+                                style="
+                                    cursor:pointer;
+                                    font-weight:600;
+                                    flex:1;
+                                "
+                            >
+                                📚 ${escapeHtml(date)}
+                            </div>
+
+                            <button
+                                onclick="deleteDiary('${escapeHtml(key)}')"
+                                style="
+                                    width:auto;
+                                    padding:8px 14px;
+                                    border:none;
+                                    border-radius:10px;
+                                    background:#ef4444;
+                                    color:white;
+                                    font-size:13px;
+                                    cursor:pointer;
+                                "
+                            >
+                                🗑 Delete
+                            </button>
+
+                        </div>
+                    `;
+                });
+        }
+
+
+        function openDiary(date) {
+
+            openPage("home");
+
+            document.getElementById("date").value = date;
+
+            loadDiary();
+        }
+
+
+        function searchDiary(text) {
+
+            const list =
+                document.getElementById("diaryList");
+
+            list.innerHTML = "";
+
+            const user =
+                localStorage.getItem("user");
+
+            if (!user) {
+                return;
+            }
+
+            Object.keys(localStorage).forEach(key => {
+
+                if (
+                    key.startsWith("diary_" + user + "_")
+                ) {
+
+                    try {
+
+                        const data =
+                            decodeURIComponent(
+                                escape(
+                                    atob(
+                                        localStorage.getItem(key)
+                                    )
+                                )
+                            );
+
+                        if (
+                            data
+                                .replace(/<[^>]*>/g, "")
+                                .toLowerCase()
+                                .includes(text.toLowerCase())
+                        ) {
+
+                            const date =
+                                key.substring(
+                                    ("diary_" + user + "_").length
+                                );
+
+                            list.innerHTML += `
+                                <div
+                                    class="item"
+                                    onclick="openDiary('${escapeHtml(date)}')"
+                                    style="cursor:pointer;"
+                                >
+                                    📅 ${escapeHtml(date)}
+                                </div>
+                            `;
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            });
+        }
+
+
+        /* =====================================================
+                            FAVORITES
+        ===================================================== */
+
+        function addFavorite() {
+
+            const key =
+                "fav_" + diaryKey();
+
+            if (localStorage.getItem(key)) {
+
+                showMsg("Already Favorite ⭐");
+
+                return;
+            }
+
+            localStorage.setItem(
+                key,
+                editor.innerHTML
+            );
+
+            showMsg("Added To Favorites ⭐");
+
+            loadFavorites();
+        }
+
+
+        function loadFavorites() {
+
+            const list =
+                document.getElementById("favoriteList");
+
+            list.innerHTML = "";
+
+            const user =
+                localStorage.getItem("user");
+
+            if (!user) {
+                return;
+            }
+
+            Object.keys(localStorage).forEach(key => {
+
+                if (
+                    key.startsWith("fav_diary_" + user + "_")
+                ) {
+
+                    const date =
+                        key.substring(
+                            ("fav_diary_" + user + "_").length
+                        );
+
+                    list.innerHTML += `
+                        <div
+                            class="item"
+                            onclick="openDiary('${escapeHtml(date)}')"
+                            style="cursor:pointer;"
+                        >
+                            ⭐ ${escapeHtml(date)}
+                        </div>
+                    `;
+                }
+            });
+        }
+
+
+        /* =====================================================
+                            DASHBOARD
+        ===================================================== */
+
+        function loadDashboard() {
+
+            const user =
+                localStorage.getItem("user");
+
+            if (!user) {
+                return;
+            }
+
+            const diaries =
+                Object.keys(localStorage)
+                    .filter(key =>
+                        key.startsWith("diary_" + user + "_")
+                    );
+
+            document.getElementById("totalDiary").innerText =
+                diaries.length;
+
+            document.getElementById("favoriteCount").innerText =
+                Object.keys(localStorage)
+                    .filter(key =>
+                        key.startsWith("fav_diary_" + user + "_")
+                    )
+                    .length;
+
+            let chars = 0;
+
+            diaries.forEach(key => {
+
+                try {
+
+                    chars +=
+                        decodeURIComponent(
+                            escape(
+                                atob(
+                                    localStorage.getItem(key)
+                                )
+                            )
+                        ).length;
+
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+
+            document.getElementById("wordCount").innerText =
+                chars;
+
+            renderCalendar();
+        }
+
+
+        /* =====================================================
+                            PROFILE
+        ===================================================== */
+
+        function saveProfile() {
+
+            const newName =
+                document.getElementById("editName").value.trim();
+
+            const newPass =
+                document.getElementById("editPass").value;
+
+            if (newName !== "") {
+
+                localStorage.setItem(
+                    "user",
+                    newName
+                );
+
+                document.getElementById(
+                    "topUserText"
+                ).innerText = newName;
+            }
+
+            if (newPass.length >= 8) {
+
+                localStorage.setItem(
+                    "password",
+                    btoa(newPass)
+                );
+            }
+
+            alert("Profile Updated ✅");
+        }
+
+
+        function uploadProfilePhoto(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                alert("Please select an image");
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload = function () {
+
+                localStorage.setItem(
+                    "profilePhoto",
+                    reader.result
+                );
+
+                document.getElementById(
+                    "profilePreview"
+                ).src = reader.result;
+
+                document.getElementById(
+                    "topProfileImg"
+                ).src = reader.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+
+        /* =====================================================
+                            ONLOAD
+        ===================================================== */
+
+        window.addEventListener("load", function () {
+
+            const savedTheme =
+                localStorage.getItem("theme");
+
+            if (savedTheme === "light") {
+                document.body.classList.add("lightTheme");
+            }
+
+            const savedPhoto =
+                localStorage.getItem("profilePhoto");
+
+            if (savedPhoto) {
+
+                document.getElementById(
+                    "profilePreview"
+                ).src = savedPhoto;
+
+                document.getElementById(
+                    "topProfileImg"
+                ).src = savedPhoto;
+            }
+
+            if (localStorage.getItem("user")) {
+
+                document.getElementById(
+                    "topUserText"
+                ).innerText =
+                    localStorage.getItem("user");
+            }
+
+            loadDiary();
+            loadSongs();
+        });
+
+
+        /* =====================================================
+                            MOOD
+        ===================================================== */
+
+        function addMood(mood) {
+
+            editor.innerHTML +=
+                "<br>" + mood + "<br>";
+
+            updateCounter();
+        }
+
+
+        /* =====================================================
+                            VOICE
+        ===================================================== */
+
+        function startVoice() {
+
+            if (!("webkitSpeechRecognition" in window)) {
+
+                alert(
+                    "Voice Recognition Not Supported"
+                );
+
+                return;
+            }
+
+            const recognition =
+                new webkitSpeechRecognition();
+
+            recognition.lang = "en-US";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.start();
+
+            recognition.onresult = function (event) {
+
+                editor.innerHTML +=
+                    " " +
+                    escapeHtml(
+                        event.results[0][0].transcript
+                    );
+
+                updateCounter();
+
+                openPage("home");
+            };
+
+            recognition.onerror = function () {
+                alert("Voice recognition error.");
+            };
+        }
+
+
+        /* =====================================================
+                            PHOTO
+        ===================================================== */
+
+        function uploadPhoto(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (!file.type.startsWith("image/")) {
+                alert("Please select an image");
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload = function () {
+
+                const img =
+                    document.getElementById(
+                        "photoPreview"
+                    );
+
+                img.src = reader.result;
+                img.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+
+        /* =====================================================
+                            THEME
+        ===================================================== */
+
+        function toggleTheme() {
+
+            document.body.classList.toggle(
+                "lightTheme"
+            );
+
+            if (
+                document.body.classList.contains(
+                    "lightTheme"
+                )
+            ) {
+
+                localStorage.setItem(
+                    "theme",
+                    "light"
+                );
+
+            } else {
+
+                localStorage.setItem(
+                    "theme",
+                    "dark"
+                );
+            }
+        }
+
+
+        /* =====================================================
+                            LOGOUT
+        ===================================================== */
+
+        function logout() {
+
+            localStorage.removeItem("user");
+            localStorage.removeItem("password");
+
+            location.reload();
+        }
+
+
+        /* =====================================================
+                            AUTO SAVE
+        ===================================================== */
+
+        setInterval(() => {
+
+            if (!localStorage.getItem("user")) {
+                return;
+            }
+
+            const txt =
+                editor.innerHTML.trim();
+
+            if (
+                txt !== "" &&
+                txt !== "<br>"
+            ) {
+
+                localStorage.setItem(
+                    diaryKey(),
+                    btoa(
+                        unescape(
+                            encodeURIComponent(txt)
+                        )
+                    )
+                );
+            }
+
+        }, 4000);
+
+
+        /* =====================================================
+                            MULTI PHOTOS
+        ===================================================== */
+
+        function photoKey() {
+
+            return "photos_" + diaryKey();
+        }
+
+
+        function addPhotos(event) {
+
+            const files =
+                Array.from(event.target.files);
+
+            if (!files.length) {
+                return;
+            }
+
+            let arr;
+
+            try {
+
+                arr = JSON.parse(
+                    localStorage.getItem(
+                        photoKey()
+                    ) || "[]"
+                );
+
+            } catch {
+
+                arr = [];
+            }
+
+            files.forEach(file => {
+
+                if (!file.type.startsWith("image/")) {
+                    return;
+                }
+
+                if (file.size > 2000000) {
+
+                    alert(
+                        file.name +
+                        " is larger than 2 MB"
+                    );
+
+                    return;
+                }
+
+                const reader =
+                    new FileReader();
+
+                reader.onload = function () {
+
+                    arr.push(reader.result);
+
+                    try {
+
+                        localStorage.setItem(
+                            photoKey(),
+                            JSON.stringify(arr)
+                        );
+
+                        renderPhotos();
+
+                    } catch {
+
+                        alert(
+                            "Storage limit reached. " +
+                            "Please remove some photos."
+                        );
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = "";
+        }
+
+
+        function renderPhotos() {
+
+            const box =
+                document.getElementById(
+                    "photoGallery"
+                );
+
+            let arr;
+
+            try {
+
+                arr = JSON.parse(
+                    localStorage.getItem(
+                        photoKey()
+                    ) || "[]"
+                );
+
+            } catch {
+
+                arr = [];
+            }
+
+            box.innerHTML = "";
+
+            arr.forEach((img, index) => {
+
+                box.innerHTML += `
+                    <div
+                        style="
+                            position:relative;
+                            width:90px;
+                            height:90px;
+                        "
+                    >
+
+                        <img
+                            src="${img}"
+                            style="
+                                width:90px;
+                                height:90px;
+                                object-fit:cover;
+                                border-radius:14px;
+                                border:2px solid rgba(
+                                    255,
+                                    255,
+                                    255,
+                                    0.15
+                                );
+                            "
+                        >
+
+                        <button
+                            onclick="deletePhoto(${index})"
+                            style="
+                                position:absolute;
+                                top:-8px;
+                                right:-8px;
+                                width:24px;
+                                height:24px;
+                                border:none;
+                                border-radius:50%;
+                                background:#ef4444;
+                                color:white;
+                                font-size:14px;
+                                font-weight:bold;
+                                cursor:pointer;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                            "
+                        >
+                            ✕
+                        </button>
+
+                    </div>
+                `;
+            });
+        }
+
+
+        function deletePhoto(index) {
+
+            let arr;
+
+            try {
+
+                arr = JSON.parse(
+                    localStorage.getItem(
+                        photoKey()
+                    ) || "[]"
+                );
+
+            } catch {
+
+                arr = [];
+            }
+
+            arr.splice(index, 1);
+
+            localStorage.setItem(
+                photoKey(),
+                JSON.stringify(arr)
+            );
+
+            renderPhotos();
+
+            showMsg("Photo Deleted 🗑");
+        }
+
+
+        /* =====================================================
+                            SUGGESTION
+        ===================================================== */
+
+        function suggestDiary() {
+
+            const suggestions = [
+
+                "Today I learned something new about...",
+
+                "A moment that made me happy today was...",
+
+                "Something I want to improve tomorrow is...",
+
+                "One thing I am grateful for is...",
+
+                "My biggest achievement today was..."
+
+            ];
+
+            document.getElementById(
+                "suggestBox"
+            ).innerText =
+                suggestions[
+                    Math.floor(
+                        Math.random() *
+                        suggestions.length
+                    )
+                ];
+        }
+
+
+        /* =====================================================
+                            TRASH
+        ===================================================== */
+
+        function deleteDiary(key) {
+
+            if (!confirm("Delete this diary?")) {
+                return;
+            }
+
+            localStorage.setItem(
+                "trash_" + key,
+                localStorage.getItem(key)
+            );
+
+            localStorage.removeItem(key);
+
+            showMsg("Diary Deleted 🗑");
+
+            showList();
+        }
+
+
+        function restoreDiary(key) {
+
+            const trashKey =
+                "trash_" + key;
+
+            const data =
+                localStorage.getItem(trashKey);
+
+            if (data !== null) {
+
+                localStorage.setItem(
+                    key,
+                    data
+                );
+
+                localStorage.removeItem(
+                    trashKey
+                );
+            }
+
+            showList();
+            loadTrash();
+        }
+
+
+        function loadTrash() {
+
+            const list =
+                document.getElementById(
+                    "trashList"
+                );
+
+            list.innerHTML = "";
+
+            const user =
+                localStorage.getItem("user");
+
+            if (!user) {
+                return;
+            }
+
+            Object.keys(localStorage)
+                .filter(key =>
+                    key.startsWith(
+                        "trash_diary_" +
+                        user +
+                        "_"
+                    )
+                )
+                .forEach(key => {
+
+                    const originalKey =
+                        key.substring(
+                            "trash_".length
+                        );
+
+                    const date =
+                        originalKey.substring(
+                            (
+                                "diary_" +
+                                user +
+                                "_"
+                            ).length
+                        );
+
+                    list.innerHTML += `
+                        <div class="item">
+
+                            <div
+                                style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    align-items:center;
+                                    gap:10px;
+                                    flex-wrap:wrap;
+                                "
+                            >
+
+                                <div
+                                    style="
+                                        font-weight:600;
+                                        flex:1;
+                                    "
+                                >
+                                    🗑 ${escapeHtml(date)}
+                                </div>
+
+                                <div
+                                    style="
+                                        display:flex;
+                                        gap:8px;
+                                    "
+                                >
+
+                                    <button
+                                        onclick="restoreDiary('${escapeHtml(originalKey)}')"
+                                        style="
+                                            width:auto;
+                                            padding:7px 14px;
+                                            border:none;
+                                            border-radius:10px;
+                                            background:#22c55e;
+                                            color:white;
+                                            font-size:12px;
+                                            cursor:pointer;
+                                        "
+                                    >
+                                        ↩ Restore
+                                    </button>
+
+                                    <button
+                                        onclick="permanentDelete('${escapeHtml(key)}')"
+                                        style="
+                                            width:auto;
+                                            padding:7px 14px;
+                                            border:none;
+                                            border-radius:10px;
+                                            background:#ef4444;
+                                            color:white;
+                                            font-size:12px;
+                                            cursor:pointer;
+                                        "
+                                    >
+                                        🗑 Delete
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
+                });
+        }
+
+
+        function permanentDelete(key) {
+
+            if (!confirm("Delete permanently?")) {
+                return;
+            }
+
+            localStorage.removeItem(key);
+
+            loadTrash();
+
+            showMsg(
+                "Permanently Deleted ❌"
+            );
+        }
+
+
+        /* =====================================================
+                            PIN
+        ===================================================== */
+
+        function pinDiary() {
+
+            const key =
+                "pin_" + diaryKey();
+
+            if (localStorage.getItem(key)) {
+
+                showMsg(
+                    "Already Pinned 📌"
+                );
+
+                return;
+            }
+
+            localStorage.setItem(
+                key,
+                "true"
+            );
+
+            showMsg(
+                "Diary Pinned 📌"
+            );
+        }
+
+
+        /* =====================================================
+                            CALENDAR
+        ===================================================== */
+
+        function renderCalendar() {
+
+            const box =
+                document.getElementById(
+                    "calendar"
+                );
+
+            if (!box) {
+                return;
+            }
+
+            const today =
+                new Date();
+
+            const year =
+                today.getFullYear();
+
+            const month =
+                today.getMonth();
+
+            const days =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                ).getDate();
+
+            box.innerHTML = "";
+
+            const user =
+                localStorage.getItem("user");
+
+            for (
+                let i = 1;
+                i <= days;
+                i++
+            ) {
+
+                const d =
+                    `${year}-${String(
+                        month + 1
+                    ).padStart(2, "0")}-${String(
+                        i
+                    ).padStart(2, "0")}`;
+
+                const hasDiary =
+                    localStorage.getItem(
+                        "diary_" +
+                        user +
+                        "_" +
+                        d
+                    );
+
+                box.innerHTML += `
+                    <button
+                        onclick="openDiary('${d}')"
+                        title="${
+                            hasDiary
+                                ? "Diary available"
+                                : "No diary"
+                        }"
+                        style="
+                            ${
+                                hasDiary
+                                    ? "border:2px solid #00b4db;"
+                                    : ""
+                            }
+                        "
+                    >
+                        ${i}
+                    </button>
+                `;
+            }
+        }
+
+
+        /* =====================================================
+                            EDITOR
+        ===================================================== */
+
+        function format(command) {
+
+            editor.focus();
+
+            document.execCommand(
+                command,
+                false,
+                null
+            );
+
+            updateCounter();
+        }
+
+
+        function addLink() {
+
+            const url =
+                prompt("Enter URL");
+
+            if (url) {
+
+                editor.focus();
+
+                document.execCommand(
+                    "createLink",
+                    false,
+                    url
+                );
+            }
+        }
+
+
+        function changeColor() {
+
+            editor.focus();
+
+            const color =
+                prompt(
+                    "Enter color name or hex code"
+                );
+
+            if (color) {
+
+                document.execCommand(
+                    "styleWithCSS",
+                    false,
+                    true
+                );
+
+                document.execCommand(
+                    "foreColor",
+                    false,
+                    color
+                );
+            }
+        }
+
+
+        function clearEditor() {
+
+            if (confirm("Clear editor?")) {
+
+                editor.innerHTML = "";
+
+                updateCounter();
+            }
+        }
+
+
+        /* =====================================================
+                            FONT SIZE
+        ===================================================== */
+
+        let currentFontSize = 3;
+
+        function increaseFontSize() {
+
+            if (currentFontSize < 7) {
+
+                currentFontSize++;
+
+                editor.focus();
+
+                document.execCommand(
+                    "fontSize",
+                    false,
+                    currentFontSize
+                );
+            }
+        }
+
+
+        function decreaseFontSize() {
+
+            if (currentFontSize > 1) {
+
+                currentFontSize--;
+
+                editor.focus();
+
+                document.execCommand(
+                    "fontSize",
+                    false,
+                    currentFontSize
+                );
+            }
+        }
+
+
+        /* =====================================================
+                            MUSIC PLAYER
+        ===================================================== */
+
+        let songs = [];
+        let currentSongIndex = -1;
+
+        const music =
+            document.getElementById(
+                "bgMusic"
+            );
+
+        const musicNow =
+            document.getElementById(
+                "musicNow"
+            );
+
+        const musicPlayBtn =
+            document.getElementById(
+                "musicPlayBtn"
+            );
+
+        const musicProgress =
+            document.getElementById(
+                "musicProgress"
+            );
+
+        const currentTimeEl =
+            document.getElementById(
+                "currentTime"
+            );
+
+        const durationEl =
+            document.getElementById(
+                "duration"
+            );
+
+
+        /* ================= LOAD SONGS ================= */
+
+        function loadSongs() {
+
+            try {
+
+                songs =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "myDiarySongs"
+                        ) || "[]"
+                    );
+
+            } catch {
+
+                songs = [];
+            }
+
+            renderSongList();
+        }
+
+
+        /* ================= ADD SONG ================= */
+
+        function addSongs(event) {
+
+            const files =
+                Array.from(
+                    event.target.files
+                );
+
+            if (!files.length) {
+                return;
+            }
+
+            files.forEach(file => {
+
+                if (
+                    !file.type.startsWith(
+                        "audio/"
+                    )
+                ) {
+
+                    alert(
+                        file.name +
+                        " is not an audio file"
+                    );
+
+                    return;
+                }
+
+                const reader =
+                    new FileReader();
+
+                reader.onload =
+                    function (e) {
+
+                        songs.push({
+                            name: file.name,
+                            data: e.target.result
+                        });
+
+                        try {
+
+                            localStorage.setItem(
+                                "myDiarySongs",
+                                JSON.stringify(songs)
+                            );
+
+                            renderSongList();
+
+                        } catch {
+
+                            alert(
+                                "Storage limit reached. " +
+                                "Please add smaller songs."
+                            );
+                        }
+                    };
+
+                reader.readAsDataURL(file);
+            });
+
+            event.target.value = "";
+        }
+
+
+        /* ================= SONG LIST ================= */
+
+        function renderSongList() {
+
+            const list =
+                document.getElementById(
+                    "songList"
+                );
+
+            list.innerHTML = "";
+
+            if (songs.length === 0) {
+
+                list.innerHTML = `
+                    <div
+                        style="
+                            text-align:center;
+                            padding:20px;
+                            opacity:0.7;
+                        "
+                    >
+                        🎵 No songs added yet.<br>
+                        Click "Add Song" to add music.
+                    </div>
+                `;
+
+                return;
+            }
+
+            songs.forEach(
+                (song, index) => {
+
+                    const active =
+                        index === currentSongIndex
+                            ? "active"
+                            : "";
+
+                    list.innerHTML += `
+                        <div
+                            class="songItem ${active}"
+                        >
+
+                            <div
+                                class="songName"
+                                onclick="playSong(${index})"
+                                title="${escapeHtml(song.name)}"
+                            >
+                                🎵 ${escapeHtml(song.name)}
+                            </div>
+
+                            <button
+                                class="songDelete"
+                                onclick="deleteSong(${index})"
+                            >
+                                ✕
+                            </button>
+
+                        </div>
+                    `;
+                }
+            );
+        }
+
+
+        /* ================= ESCAPE HTML ================= */
+
+        function escapeHtml(text) {
+
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        /* ================= PLAY SONG ================= */
+
+        function playSong(index) {
+
+            if (!songs[index]) {
+                return;
+            }
+
+            currentSongIndex = index;
+
+            music.src =
+                songs[index].data;
+
+            music.load();
+
+            music.play()
+                .then(() => {
+
+                    musicPlayBtn.innerText =
+                        "⏸";
+
+                })
+                .catch(() => {
+
+                    alert(
+                        "Browser could not play this song."
+                    );
+                });
+
+            musicNow.innerText =
+                "🎵 " +
+                songs[index].name;
+
+            renderSongList();
+        }
+
+
+        /* ================= PLAY / PAUSE ================= */
+
+        function toggleMusic() {
+
+            if (!songs.length) {
+
+                alert(
+                    "First add a song 🎵"
+                );
+
+                openPage("music");
+
+                return;
+            }
+
+            if (!music.src) {
+
+                playSong(0);
+
+                return;
+            }
+
+            if (music.paused) {
+
+                music.play();
+
+                musicPlayBtn.innerText =
+                    "⏸";
+
+            } else {
+
+                music.pause();
+
+                musicPlayBtn.innerText =
+                    "▶️";
+            }
+        }
+
+
+        /* ================= NEXT ================= */
+
+        function nextSong() {
+
+            if (!songs.length) {
+                return;
+            }
+
+            if (currentSongIndex === -1) {
+
+                playSong(0);
+
+                return;
+            }
+
+            currentSongIndex =
+                (
+                    currentSongIndex + 1
+                ) % songs.length;
+
+            playSong(currentSongIndex);
+        }
+
+
+        /* ================= PREVIOUS ================= */
+
+        function previousSong() {
+
+            if (!songs.length) {
+                return;
+            }
+
+            if (currentSongIndex === -1) {
+
+                playSong(0);
+
+                return;
+            }
+
+            currentSongIndex =
+                (
+                    currentSongIndex -
+                    1 +
+                    songs.length
+                ) % songs.length;
+
+            playSong(currentSongIndex);
+        }
+
+
+        /* ================= DELETE SONG ================= */
+
+        function deleteSong(index) {
+
+            if (
+                !confirm(
+                    "Delete this song?"
+                )
+            ) {
+                return;
+            }
+
+            if (
+                index === currentSongIndex
+            ) {
+
+                music.pause();
+
+                music.removeAttribute(
+                    "src"
+                );
+
+                music.load();
+
+                currentSongIndex = -1;
+
+                musicNow.innerText =
+                    "No song selected";
+
+                musicPlayBtn.innerText =
+                    "▶️";
+            }
+
+            songs.splice(index, 1);
+
+            localStorage.setItem(
+                "myDiarySongs",
+                JSON.stringify(songs)
+            );
+
+            if (
+                currentSongIndex > index
+            ) {
+
+                currentSongIndex--;
+            }
+
+            renderSongList();
+        }
+
+
+        /* ================= VOLUME ================= */
+
+        function changeVolume(value) {
+
+            music.volume =
+                parseFloat(value);
+
+            localStorage.setItem(
+                "musicVolume",
+                value
+            );
+        }
+
+
+        /* ================= PROGRESS ================= */
+
+        music.addEventListener(
+            "loadedmetadata",
+            function () {
+
+                musicProgress.max =
+                    music.duration || 100;
+
+                durationEl.innerText =
+                    formatTime(
+                        music.duration
+                    );
+            }
         );
 
 
-        deferredPrompt = null;
+        music.addEventListener(
+            "timeupdate",
+            function () {
+
+                if (!music.duration) {
+                    return;
+                }
+
+                musicProgress.value =
+                    music.currentTime;
+
+                currentTimeEl.innerText =
+                    formatTime(
+                        music.currentTime
+                    );
+            }
+        );
 
 
-        installBtn.style.display = "none";
+        function seekMusic(value) {
 
-    });
+            if (music.duration) {
 
-}
-
-
-/* ================= APP INSTALLED ================= */
-
-window.addEventListener("appinstalled", () => {
-
-    console.log(
-        "✅ My Diary installed successfully"
-    );
-
-    deferredPrompt = null;
-
-    if (installBtn) {
-        installBtn.style.display = "none";
-    }
-
-});
+                music.currentTime =
+                    value;
+            }
+        }
 
 
-/* ================= SERVICE WORKER ================= */
+        /* ================= AUTO NEXT ================= */
 
-if ("serviceWorker" in navigator) {
+        music.addEventListener(
+            "ended",
+            function () {
+                nextSong();
+            }
+        );
 
-    window.addEventListener("load", () => {
 
-        navigator.serviceWorker
-            .register("./sw.js")
+        /* ================= TIME FORMAT ================= */
 
-            .then((registration) => {
+        function formatTime(seconds) {
+
+            if (
+                !seconds ||
+                isNaN(seconds)
+            ) {
+                return "0:00";
+            }
+
+            const min =
+                Math.floor(
+                    seconds / 60
+                );
+
+            const sec =
+                Math.floor(
+                    seconds % 60
+                );
+
+            return (
+                min +
+                ":" +
+                String(sec).padStart(
+                    2,
+                    "0"
+                )
+            );
+        }
+
+
+        /* ================= RESTORE VOLUME ================= */
+
+        const savedVolume =
+            localStorage.getItem(
+                "musicVolume"
+            );
+
+        if (savedVolume !== null) {
+
+            music.volume =
+                parseFloat(savedVolume);
+
+            document.getElementById(
+                "musicVolume"
+            ).value =
+                savedVolume;
+
+        } else {
+
+            music.volume = 0.8;
+        }
+
+
+        /* =====================================================
+                            EXPORT BACKUP
+        ===================================================== */
+
+        function exportData() {
+
+            const backup = {};
+
+            for (
+                let i = 0;
+                i < localStorage.length;
+                i++
+            ) {
+
+                const key =
+                    localStorage.key(i);
+
+                backup[key] =
+                    localStorage.getItem(key);
+            }
+
+            const blob =
+                new Blob(
+                    [
+                        JSON.stringify(
+                            backup,
+                            null,
+                            2
+                        )
+                    ],
+                    {
+                        type:
+                            "application/json"
+                    }
+                );
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+            const a =
+                document.createElement(
+                    "a"
+                );
+
+            a.href = url;
+
+            a.download =
+                "my-diary-backup-" +
+                new Date()
+                    .toISOString()
+                    .split("T")[0] +
+                ".json";
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            a.remove();
+
+            URL.revokeObjectURL(url);
+
+            showMsg(
+                "Backup Exported ✅"
+            );
+        }
+
+
+        /* =====================================================
+                            IMPORT BACKUP
+        ===================================================== */
+
+        function importData(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file) {
+                return;
+            }
+
+            if (
+                !confirm(
+                    "Importing backup will add/replace stored data. Continue?"
+                )
+            ) {
+
+                event.target.value = "";
+
+                return;
+            }
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function (e) {
+
+                    try {
+
+                        const backup =
+                            JSON.parse(
+                                e.target.result
+                            );
+
+                        Object.keys(
+                            backup
+                        ).forEach(key => {
+
+                            localStorage.setItem(
+                                key,
+                                backup[key]
+                            );
+                        });
+
+                        alert(
+                            "Backup Imported Successfully ✅"
+                        );
+
+                        location.reload();
+
+                    } catch {
+
+                        alert(
+                            "Invalid backup file ❌"
+                        );
+                    }
+                };
+
+            reader.readAsText(file);
+
+            event.target.value = "";
+        }
+
+
+        /* =====================================================
+                            SERVICE WORKER
+        ===================================================== */
+
+        if (
+            "serviceWorker" in navigator
+        ) {
+
+            window.addEventListener(
+                "load",
+                () => {
+
+                    navigator.serviceWorker
+                        .register("./sw.js")
+                        .then(
+                            registration => {
+
+                                console.log(
+                                    "✅ Service Worker Registered:",
+                                    registration.scope
+                                );
+
+                            }
+                        )
+                        .catch(
+                            error => {
+
+                                console.error(
+                                    "❌ Service Worker Error:",
+                                    error
+                                );
+                            }
+                        );
+                }
+            );
+        }
+
+
+        /* =====================================================
+                            PWA INSTALL
+        ===================================================== */
+
+        let deferredPrompt = null;
+
+        const installBtn =
+            document.getElementById(
+                "installBtn"
+            );
+
+
+        window.addEventListener(
+            "beforeinstallprompt",
+            event => {
 
                 console.log(
-                    "✅ Service Worker Registered:",
-                    registration.scope
+                    "✅ PWA install prompt available"
                 );
 
-            })
+                event.preventDefault();
 
-            .catch((error) => {
+                deferredPrompt = event;
 
-                console.error(
-                    "❌ Service Worker Error:",
-                    error
+                if (installBtn) {
+                    installBtn.style.display =
+                        "block";
+                }
+            }
+        );
+
+
+        if (installBtn) {
+
+            installBtn.addEventListener(
+                "click",
+                async () => {
+
+                    if (!deferredPrompt) {
+
+                        alert(
+                            "Install option is not available yet.\n\n" +
+                            "Please open My Diary using Chrome or Edge " +
+                            "on HTTPS or localhost."
+                        );
+
+                        return;
+                    }
+
+                    deferredPrompt.prompt();
+
+                    const result =
+                        await deferredPrompt.userChoice;
+
+                    console.log(
+                        "Install result:",
+                        result.outcome
+                    );
+
+                    deferredPrompt = null;
+
+                    installBtn.style.display =
+                        "none";
+                }
+            );
+        }
+
+
+        /* =====================================================
+                            APP INSTALLED
+        ===================================================== */
+
+        window.addEventListener(
+            "appinstalled",
+            () => {
+
+                console.log(
+                    "✅ My Diary installed successfully"
                 );
 
-            });
+                deferredPrompt = null;
 
-    });
-
-}
-
-</script>
+                if (installBtn) {
+                    installBtn.style.display =
+                        "none";
+                }
+            }
+        );
+    </script>
 
 </body>
 </html>
-
