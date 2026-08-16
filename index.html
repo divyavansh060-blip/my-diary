@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Diary - Secure Personal Journal</title>
+    <title>My Diary</title>
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -681,6 +681,31 @@ button:hover{
     margin-top:4px;
 }
 
+/* ================= INSTALL BUTTON ================= */
+
+#installBtn{
+    display:none;
+    position:fixed;
+    bottom:30px;
+    right:30px;
+    z-index:99999;
+    width:auto;
+    padding:15px 22px;
+    border:none;
+    border-radius:18px;
+    background:
+        linear-gradient(
+            135deg,
+            #00b4db,
+            #0083b0
+        );
+    color:white;
+    font-weight:600;
+    font-size:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
+    cursor:pointer;
+}
+
 /* ================= LIGHT THEME ================= */
 
 .lightTheme{
@@ -791,26 +816,6 @@ button:hover{
 
 }
 
-    .passwordBox {
-    position: relative;
-    width: 100%;
-}
-
-.passwordBox input {
-    width: 100%;
-    box-sizing: border-box;
-    padding-right: 50px;
-}
-
-.eye {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 20px;
-    user-select: none;
-}
 </style>
 
 </head>
@@ -833,26 +838,22 @@ button:hover{
 <!-- ================= LOGIN ================= -->
 
 <div id="loginPage">
+
     <div class="loginBox">
+
         <h1>📔 My Diary</h1>
+
         <input
             type="text"
             id="loginName"
             placeholder="Enter Your Name"
         >
 
-        <div class="passwordBox">
-            <input
-                type="password"
-                id="loginPass"
-                placeholder="Password (8+ Characters)"
-            >
-
-            <span
-                class="eye"
-                onclick="togglePass()"
-            >👁</span>
-        </div>
+        <input
+            type="password"
+            id="loginPass"
+            placeholder="Password (8+ Characters)"
+        >
 
         <button
             class="loginBtn"
@@ -864,6 +865,7 @@ button:hover{
     </div>
 
 </div>
+
 
 <!-- ================= APP ================= -->
 
@@ -1678,20 +1680,7 @@ document.addEventListener(
     }
 );
 
-function togglePass() {
 
-    const pass = document.getElementById("loginPass");
-    const eye = document.querySelector(".eye");
-
-    if (pass.type === "password") {
-        pass.type = "text";
-        eye.textContent = "🙈";
-    } else {
-        pass.type = "password";
-        eye.textContent = "👁";
-    }
-
-}
 /* =====================================================
    PAGE NAVIGATION
 ===================================================== */
