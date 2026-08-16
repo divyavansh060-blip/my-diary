@@ -848,12 +848,11 @@ button:hover{
             id="loginName"
             placeholder="Enter Your Name"
         >
-
-        <input
-            type="password"
-            id="loginPass"
-            placeholder="Password (8+ Characters)"
-        >
+<div class="passbox">
+ <input type="password" id="loginPass"  placeholder="Password (8+ Characters)">
+<span class="eye" onclick="togglePass()">👁</span>
+</div>
+        
 
         <button
             class="loginBtn"
