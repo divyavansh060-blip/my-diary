@@ -791,6 +791,26 @@ button:hover{
 
 }
 
+    .passwordBox {
+    position: relative;
+    width: 100%;
+}
+
+.passwordBox input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 50px;
+}
+
+.eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+}
 </style>
 
 </head>
@@ -813,21 +833,26 @@ button:hover{
 <!-- ================= LOGIN ================= -->
 
 <div id="loginPage">
-
     <div class="loginBox">
-
         <h1>📔 My Diary</h1>
-
         <input
             type="text"
             id="loginName"
             placeholder="Enter Your Name"
         >
 
- <input type="password" id="loginPass"  placeholder="Password (8+ Characters)"  <span class="eye" onclick="togglePass()">👁</span>>
+        <div class="passwordBox">
+            <input
+                type="password"
+                id="loginPass"
+                placeholder="Password (8+ Characters)"
+            >
 
-
-        
+            <span
+                class="eye"
+                onclick="togglePass()"
+            >👁</span>
+        </div>
 
         <button
             class="loginBtn"
@@ -839,7 +864,6 @@ button:hover{
     </div>
 
 </div>
-
 
 <!-- ================= APP ================= -->
 
@@ -1654,7 +1678,20 @@ document.addEventListener(
     }
 );
 
+function togglePass() {
 
+    const pass = document.getElementById("loginPass");
+    const eye = document.querySelector(".eye");
+
+    if (pass.type === "password") {
+        pass.type = "text";
+        eye.textContent = "🙈";
+    } else {
+        pass.type = "password";
+        eye.textContent = "👁";
+    }
+
+}
 /* =====================================================
    PAGE NAVIGATION
 ===================================================== */
