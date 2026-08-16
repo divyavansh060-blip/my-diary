@@ -680,32 +680,7 @@ button:hover{
     color:#ccc;
     margin-top:4px;
 }
-
-/* ================= INSTALL BUTTON ================= */
-
-#installBtn{
-    display:none;
-    position:fixed;
-    bottom:30px;
-    right:30px;
-    z-index:99999;
-    width:auto;
-    padding:15px 22px;
-    border:none;
-    border-radius:18px;
-    background:
-        linear-gradient(
-            135deg,
-            #00b4db,
-            #0083b0
-        );
-    color:white;
-    font-weight:600;
-    font-size:15px;
-    box-shadow:0 10px 25px rgba(0,0,0,.4);
-    cursor:pointer;
-}
-
+    
 /* ================= LIGHT THEME ================= */
 
 .lightTheme{
@@ -815,7 +790,27 @@ button:hover{
     }
 
 }
+    
+.passwordBox {
+    position: relative;
+    width: 100%;
+}
 
+.passwordBox input {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 50px;
+}
+
+.eye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 20px;
+    user-select: none;
+}
 </style>
 
 </head>
@@ -849,11 +844,18 @@ button:hover{
             placeholder="Enter Your Name"
         >
 
-        <input
-            type="password"
-            id="loginPass"
-            placeholder="Password (8+ Characters)"
-        >
+        <div class="passwordBox">
+            <input
+                type="password"
+                id="loginPass"
+                placeholder="Password (8+ Characters)"
+            >
+
+            <span
+                class="eye"
+                onclick="togglePass()"
+            >👁</span>
+        </div>
 
         <button
             class="loginBtn"
@@ -865,7 +867,6 @@ button:hover{
     </div>
 
 </div>
-
 
 <!-- ================= APP ================= -->
 
@@ -1680,7 +1681,20 @@ document.addEventListener(
     }
 );
 
+function togglePass() {
 
+    const pass = document.getElementById("loginPass");
+    const eye = document.querySelector(".eye");
+
+    if (pass.type === "password") {
+        pass.type = "text";
+        eye.textContent = "🙈";
+    } else {
+        pass.type = "password";
+        eye.textContent = "👁";
+    }
+
+}
 /* =====================================================
    PAGE NAVIGATION
 ===================================================== */
