@@ -811,7 +811,51 @@ button:hover{
     font-size: 20px;
     user-select: none;
 }
+
+/* ================= NEW DIARY FEATURES ================= */
+.heatmap{
+    display:grid;
+    grid-template-columns:repeat(14,minmax(18px,1fr));
+    gap:6px;
+    margin-top:15px;
+    overflow-x:auto;
+}
+.heatCell{
+    width:100%;
+    min-width:18px;
+    aspect-ratio:1;
+    border-radius:5px;
+    background:rgba(255,255,255,.08);
+    cursor:pointer;
+    position:relative;
+}
+.heatCell:hover{outline:2px solid rgba(255,255,255,.5);}
+.heat0{background:rgba(255,255,255,.08);}
+.heat1{background:#164e63;}
+.heat2{background:#0e7490;}
+.heat3{background:#0891b2;}
+.heat4{background:#22d3ee;}
+.heatLegend{display:flex;gap:6px;align-items:center;margin-top:10px;font-size:12px;color:#ccc;}
+.heatLegend i{display:inline-block;width:14px;height:14px;border-radius:3px;}
+#pinOverlay{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(2,6,23,.92);backdrop-filter:blur(18px);z-index:100000;
+}
+.pinModal{
+    width:360px;max-width:90%;padding:30px;border-radius:28px;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center;
+}
+.pinModal input{text-align:center;font-size:24px;letter-spacing:8px;}
+.pinError{color:#ff8f8f;margin-top:10px;min-height:22px;}
+.versionItem{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;}
+.versionMeta{font-size:12px;color:#b9eefa;}
+.draftBadge{display:inline-block;padding:4px 9px;border-radius:20px;background:rgba(34,197,94,.18);color:#86efac;font-size:12px;}
+
 </style>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </head>
 
@@ -914,6 +958,22 @@ button:hover{
 
         <button onclick="openPage('music')">
             🎵 Music
+        </button>
+
+        <button onclick="openPage('insights')">
+            🔥 Streak & Heatmap
+        </button>
+
+        <button onclick="openPage('history')">
+            🕘 Version History
+        </button>
+
+        <button onclick="openPage('pinSettings')">
+            🔐 Diary PIN
+        </button>
+
+        <button onclick="exportFullDiaryPDF()">
+            📖 Full Diary PDF
         </button>
 
         <button onclick="toggleTheme()">
@@ -1578,6 +1638,57 @@ button:hover{
 
         </div>
 
+
+        <!-- ================= INSIGHTS ================= -->
+        <div id="insights" class="page">
+            <div class="card">
+                <h2>🔥 Diary Streak & Calendar Heatmap</h2>
+                <div class="stats">
+                    <div class="stat">
+                        <h1 id="currentStreak">0</h1>
+                        <p>Current Streak 🔥</p>
+                    </div>
+                    <div class="stat">
+                        <h1 id="bestStreak">0</h1>
+                        <p>Best Streak 🏆</p>
+                    </div>
+                    <div class="stat">
+                        <h1 id="activeDays">0</h1>
+                        <p>Writing Days</p>
+                    </div>
+                </div>
+                <h3 style="margin-top:28px;">📅 Activity Heatmap</h3>
+                <div id="heatmap" class="heatmap"></div>
+                <div class="heatLegend">
+                    <span>Less</span><i class="heat0"></i><i class="heat1"></i><i class="heat2"></i><i class="heat3"></i><i class="heat4"></i><span>More</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= HISTORY ================= -->
+        <div id="history" class="page">
+            <div class="card">
+                <h2>🕘 Version History / Auto Draft</h2>
+                <p style="margin:8px 0;color:#b9eefa;">Your editor automatically saves drafts and recent versions for the selected date.</p>
+                <div id="draftStatus" class="msg"></div>
+                <div id="historyList" class="list"></div>
+            </div>
+        </div>
+
+        <!-- ================= PIN SETTINGS ================= -->
+        <div id="pinSettings" class="page">
+            <div class="card">
+                <h2>🔐 Diary PIN Lock</h2>
+                <p style="margin:8px 0 15px;">Create a 4–6 digit PIN. The PIN is stored locally in this browser.</p>
+                <input id="newDiaryPin" inputmode="numeric" maxlength="6" placeholder="New PIN (4–6 digits)" type="password">
+                <input id="confirmDiaryPin" inputmode="numeric" maxlength="6" placeholder="Confirm PIN" type="password">
+                <button class="loginBtn" onclick="setDiaryPin()">🔒 Save PIN</button>
+                <button class="actionBtn" onclick="removeDiaryPin()">🔓 Remove PIN</button>
+                <button class="actionBtn" onclick="lockDiary()">🔐 Lock Now</button>
+                <div id="pinStatus" class="msg"></div>
+            </div>
+        </div>
+
     </div>
 
 </div>
@@ -1737,6 +1848,12 @@ function openPage(id){
     if(id === "music"){
         loadSongs();
     }
+    if(id === "insights"){
+        loadInsights();
+    }
+    if(id === "history"){
+        loadHistory();
+    }
 
 }
 
@@ -1804,10 +1921,14 @@ function saveDiary(){
         return;
     }
 
+    createVersionSnapshot();
+
     localStorage.setItem(
         diaryKey(),
         encodeData(txt)
     );
+
+    localStorage.removeItem(draftKey(document.getElementById("date").value));
 
     showMsg(
         "Diary Saved Successfully ✅"
@@ -1850,6 +1971,7 @@ function loadDiary(){
     updateCounter();
 
     renderPhotos();
+    loadDraftIfNewer();
 
 }
 
@@ -2899,54 +3021,19 @@ function pinDiary(){
 ===================================================== */
 
 function renderCalendar(){
-
-    const box =
-        document.getElementById(
-            "calendar"
-        );
-
-    const today =
-        new Date();
-
-    const year =
-        today.getFullYear();
-
-    const month =
-        today.getMonth();
-
-    const days =
-        new Date(
-            year,
-            month + 1,
-            0
-        ).getDate();
-
-
-    box.innerHTML = "";
-
-
-    for(
-        let i = 1;
-        i <= days;
-        i++
-    ){
-
-        const date =
-            `${year}-${String(month + 1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
-
-
-        box.innerHTML += `
-
-            <button
-                onclick="openDiary('${date}')"
-            >
-                ${i}
-            </button>
-
-        `;
-
+    const box=document.getElementById("calendar");
+    const today=new Date();
+    const year=today.getFullYear();
+    const month=today.getMonth();
+    const days=new Date(year,month+1,0).getDate();
+    const user=localStorage.getItem("user");
+    const dates=new Set(diaryDates());
+    box.innerHTML="";
+    for(let i=1;i<=days;i++){
+        const date=`${year}-${String(month+1).padStart(2,"0")}-${String(i).padStart(2,"0")}`;
+        const has=dates.has(date);
+        box.innerHTML+=`<button style="${has?'background:linear-gradient(135deg,var(--primary),var(--secondary));':''}" onclick="openDiary('${date}')">${i}${has?' ✍️':''}</button>`;
     }
-
 }
 
 
@@ -3788,6 +3875,333 @@ function formatTime(seconds){
 }
 
 
+
+/* =====================================================
+   DIARY PIN LOCK
+   ===================================================== */
+function pinStorageKey(){
+    return "diary_pin_" + (localStorage.getItem("user") || "");
+}
+function setDiaryPin(){
+    const p = document.getElementById("newDiaryPin").value.trim();
+    const c = document.getElementById("confirmDiaryPin").value.trim();
+    const status = document.getElementById("pinStatus");
+    if(!/^\d{4,6}$/.test(p)){
+        status.innerText = "PIN must contain 4–6 digits.";
+        return;
+    }
+    if(p !== c){
+        status.innerText = "PINs do not match.";
+        return;
+    }
+    localStorage.setItem(pinStorageKey(), btoa(p));
+    status.innerText = "Diary PIN saved 🔒";
+    document.getElementById("newDiaryPin").value = "";
+    document.getElementById("confirmDiaryPin").value = "";
+}
+function removeDiaryPin(){
+    if(confirm("Remove Diary PIN lock?")){
+        localStorage.removeItem(pinStorageKey());
+        document.getElementById("pinStatus").innerText = "Diary PIN removed 🔓";
+    }
+}
+function hasDiaryPin(){
+    return !!localStorage.getItem(pinStorageKey());
+}
+function lockDiary(){
+    if(!hasDiaryPin()) return;
+    const overlay = document.getElementById("pinOverlay");
+    if(overlay) overlay.style.display = "flex";
+    const input = document.getElementById("unlockPinInput");
+    if(input){ input.value=""; setTimeout(()=>input.focus(),100); }
+}
+function unlockDiary(){
+    const entered = document.getElementById("unlockPinInput").value.trim();
+    const saved = localStorage.getItem(pinStorageKey());
+    const error = document.getElementById("pinError");
+    if(saved && btoa(entered) === saved){
+        document.getElementById("pinOverlay").style.display = "none";
+        error.innerText = "";
+    }else{
+        error.innerText = "Wrong PIN ❌";
+        document.getElementById("unlockPinInput").value = "";
+    }
+}
+document.addEventListener("keydown", function(e){
+    const overlay = document.getElementById("pinOverlay");
+    if(overlay && overlay.style.display === "flex" && e.key === "Enter") unlockDiary();
+});
+
+/* =====================================================
+   AUTO DRAFT + VERSION HISTORY
+   ===================================================== */
+let draftTimer = null;
+const MAX_VERSIONS = 20;
+
+function historyKey(date){
+    return "history_" + localStorage.getItem("user") + "_" + date;
+}
+function draftKey(date){
+    return "draft_" + localStorage.getItem("user") + "_" + date;
+}
+function saveAutoDraft(){
+    const user = localStorage.getItem("user");
+    const date = document.getElementById("date")?.value;
+    if(!user || !date || !editor) return;
+    const content = editor.innerHTML;
+    if(!content.trim()) return;
+    localStorage.setItem(draftKey(date), JSON.stringify({
+        content: encodeData(content),
+        time: new Date().toISOString()
+    }));
+    const status = document.getElementById("draftStatus");
+    if(status) status.innerHTML = '<span class="draftBadge">Auto draft saved</span>';
+}
+function createVersionSnapshot(){
+    const user = localStorage.getItem("user");
+    const date = document.getElementById("date")?.value;
+    if(!user || !date || !editor || !editor.innerText.trim()) return;
+    let arr = [];
+    try{ arr = JSON.parse(localStorage.getItem(historyKey(date)) || "[]"); }catch{ arr=[]; }
+    const encoded = encodeData(editor.innerHTML);
+    if(arr[0] && arr[0].content === encoded) return;
+    arr.unshift({
+        content: encoded,
+        time: new Date().toISOString(),
+        chars: editor.innerText.length
+    });
+    arr = arr.slice(0, MAX_VERSIONS);
+    localStorage.setItem(historyKey(date), JSON.stringify(arr));
+}
+function scheduleAutoDraft(){
+    clearTimeout(draftTimer);
+    draftTimer = setTimeout(()=>{
+        saveAutoDraft();
+    }, 700);
+}
+function loadDraftIfNewer(){
+    const user = localStorage.getItem("user");
+    const date = document.getElementById("date")?.value;
+    if(!user || !date) return;
+    const raw = localStorage.getItem(draftKey(date));
+    if(!raw) return;
+    try{
+        const d = JSON.parse(raw);
+        const saved = localStorage.getItem(diaryKey());
+        if(!saved || new Date(d.time).getTime() > 0){
+            const use = confirm("A newer auto-draft is available for this date. Restore it?");
+            if(use) editor.innerHTML = decodeData(d.content);
+        }
+    }catch{}
+    updateCounter();
+}
+function loadHistory(){
+    const list = document.getElementById("historyList");
+    if(!list) return;
+    list.innerHTML = "";
+    const date = document.getElementById("date")?.value;
+    if(!date){ list.innerHTML="<div class='item'>Select a diary date first.</div>"; return; }
+    let arr=[];
+    try{ arr=JSON.parse(localStorage.getItem(historyKey(date)) || "[]"); }catch{arr=[];}
+    const draft = localStorage.getItem(draftKey(date));
+    if(draft){
+        try{
+            const d=JSON.parse(draft);
+            list.innerHTML += `<div class="item versionItem">
+                <div><b>📝 Auto Draft</b><div class="versionMeta">${new Date(d.time).toLocaleString()}</div></div>
+                <button style="width:auto;padding:8px 12px;border-radius:10px;background:#22c55e;color:white;" onclick="restoreDraft()">Restore</button>
+            </div>`;
+        }catch{}
+    }
+    if(!arr.length){
+        list.innerHTML += "<div class='item'>No saved versions for this date yet.</div>";
+        return;
+    }
+    arr.forEach((v,i)=>{
+        list.innerHTML += `<div class="item versionItem">
+            <div><b>Version ${arr.length-i}</b><div class="versionMeta">${new Date(v.time).toLocaleString()} • ${v.chars} characters</div></div>
+            <button style="width:auto;padding:8px 12px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;" onclick="restoreVersion(${i})">Restore</button>
+        </div>`;
+    });
+}
+function restoreDraft(){
+    const raw=localStorage.getItem(draftKey(document.getElementById("date").value));
+    if(!raw) return;
+    try{
+        const d=JSON.parse(raw);
+        editor.innerHTML=decodeData(d.content);
+        updateCounter(); openPage("home"); showMsg("Draft restored 📝");
+    }catch{}
+}
+function restoreVersion(index){
+    const date=document.getElementById("date").value;
+    let arr=[];
+    try{arr=JSON.parse(localStorage.getItem(historyKey(date))||"[]");}catch{}
+    if(!arr[index]) return;
+    if(confirm("Restore this version into the editor?")){
+        editor.innerHTML=decodeData(arr[index].content);
+        updateCounter(); openPage("home"); showMsg("Version restored 🕘");
+    }
+}
+
+/* Add auto-save listener without replacing the existing input listener */
+if(editor){
+    editor.addEventListener("input", function(){
+        scheduleAutoDraft();
+    });
+}
+
+/* =====================================================
+   CALENDAR HEATMAP + STREAK
+   ===================================================== */
+function diaryDates(){
+    const user=localStorage.getItem("user");
+    if(!user) return [];
+    return Object.keys(localStorage)
+      .filter(k=>k.startsWith("diary_"+user+"_"))
+      .map(k=>k.split("_").pop())
+      .filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d));
+}
+function getStreakData(){
+    const set=new Set(diaryDates());
+    const today=new Date(); today.setHours(0,0,0,0);
+    let current=0;
+    let d=new Date(today);
+    while(set.has(d.toISOString().slice(0,10))){
+        current++; d.setDate(d.getDate()-1);
+    }
+    let best=0, run=0, prev=null;
+    [...set].sort().forEach(ds=>{
+        const x=new Date(ds+"T00:00:00");
+        if(prev && (x-prev)/(86400000)===1) run++;
+        else run=1;
+        best=Math.max(best,run); prev=x;
+    });
+    return {current,best,active:set.size};
+}
+function renderHeatmap(){
+    const box=document.getElementById("heatmap");
+    if(!box) return;
+    const user=localStorage.getItem("user");
+    if(!user){box.innerHTML="";return;}
+    const counts={};
+    diaryDates().forEach(ds=>{
+        const key="diary_"+user+"_"+ds;
+        try{
+            const txt=decodeData(localStorage.getItem(key)||"").replace(/<[^>]*>/g,"").trim();
+            counts[ds]=txt.length;
+        }catch{counts[ds]=0;}
+    });
+    const end=new Date(); end.setHours(0,0,0,0);
+    const start=new Date(end); start.setDate(start.getDate()-363);
+    box.innerHTML="";
+    for(let i=0;i<364;i++){
+        const d=new Date(start); d.setDate(start.getDate()+i);
+        const ds=d.toISOString().slice(0,10);
+        const n=counts[ds]||0;
+        const level=n===0?0:n<150?1:n<500?2:n<1000?3:4;
+        box.innerHTML+=`<div class="heatCell heat${level}" title="${ds}: ${n} characters" onclick="openDiary('${ds}')"></div>`;
+    }
+    const s=getStreakData();
+    const a=document.getElementById("currentStreak"), b=document.getElementById("bestStreak"), c=document.getElementById("activeDays");
+    if(a)a.innerText=s.current;
+    if(b)b.innerText=s.best;
+    if(c)c.innerText=s.active;
+}
+function loadInsights(){
+    renderHeatmap();
+}
+
+
+
+/* =====================================================
+   FULL DIARY -> BEAUTIFUL PDF BOOK
+   ===================================================== */
+async function exportFullDiaryPDF(){
+    const user=localStorage.getItem("user");
+    if(!user){alert("Please login first.");return;}
+    if(!window.jspdf || !window.jspdf.jsPDF){
+        alert("PDF library is still loading. Please try again.");
+        return;
+    }
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:"mm",format:"a4"});
+    const diaries=Object.keys(localStorage)
+      .filter(k=>k.startsWith("diary_"+user+"_"))
+      .map(key=>({key,date:key.split("_").pop()}))
+      .sort((a,b)=>a.date.localeCompare(b.date));
+
+    if(!diaries.length){alert("No saved diaries found.");return;}
+
+    const margin=18;
+    let pageNo=0;
+
+    // Cover
+    pdf.setFillColor(15,23,42);
+    pdf.rect(0,0,210,297,"F");
+    pdf.setTextColor(0,180,219);
+    pdf.setFontSize(42);
+    pdf.text("MY DIARY",105,105,{align:"center"});
+    pdf.setTextColor(255,255,255);
+    pdf.setFontSize(18);
+    pdf.text("My Personal Journal",105,120,{align:"center"});
+    pdf.setFontSize(12);
+    pdf.text("Created for "+user,105,140,{align:"center"});
+    pdf.setFontSize(10);
+    pdf.text(new Date().toLocaleDateString(),105,155,{align:"center"});
+
+    // Table of contents
+    pdf.addPage(); pageNo++;
+    pdf.setTextColor(15,23,42);
+    pdf.setFontSize(24);
+    pdf.text("Contents",margin,25);
+    pdf.setFontSize(11);
+    diaries.forEach((d,i)=>{
+        const y=38+i*7;
+        if(y<285) pdf.text(`${i+1}.  ${d.date}`,margin,y);
+    });
+
+    for(let i=0;i<diaries.length;i++){
+        const d=diaries[i];
+        let data="";
+        try{data=decodeData(localStorage.getItem(d.key)||"");}catch{}
+        const plain=data.replace(/<br\s*\/?>/gi,"\n").replace(/<\/p>/gi,"\n").replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").trim();
+        pdf.addPage();
+        pdf.setFillColor(245,248,250);
+        pdf.rect(0,0,210,297,"F");
+        pdf.setTextColor(0,131,176);
+        pdf.setFontSize(22);
+        pdf.text("📔 My Diary",margin,24);
+        pdf.setTextColor(15,23,42);
+        pdf.setFontSize(18);
+        pdf.text(d.date,margin,38);
+        pdf.setDrawColor(0,180,219);
+        pdf.line(margin,43,192,43);
+        pdf.setFontSize(11);
+        const lines=pdf.splitTextToSize(plain||"(Empty diary)",174);
+        let y=54;
+        lines.forEach(line=>{
+            if(y>280){
+                pdf.addPage();
+                pdf.setFillColor(245,248,250);
+                pdf.rect(0,0,210,297,"F");
+                y=22;
+                pdf.setTextColor(15,23,42);
+                pdf.setFontSize(11);
+            }
+            pdf.text(line,margin,y);
+            y+=6;
+        });
+        pdf.setTextColor(100,116,139);
+        pdf.setFontSize(8);
+        pdf.text(`Page ${pdf.getNumberOfPages()} • ${user}`,105,290,{align:"center"});
+    }
+
+    pdf.save("My-Diary-Book-"+new Date().toISOString().slice(0,10)+".pdf");
+    showMsg("Beautiful Diary PDF created 📖");
+}
+
+
 /* =====================================================
    BACKUP EXPORT
 ===================================================== */
@@ -4279,6 +4693,18 @@ window.addEventListener(
 );
 
 </script>
+
+
+<div id="pinOverlay">
+    <div class="pinModal">
+        <div style="font-size:48px;">🔐</div>
+        <h2>Diary Locked</h2>
+        <p style="margin:8px 0 15px;">Enter your Diary PIN to continue.</p>
+        <input id="unlockPinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••••">
+        <button class="loginBtn" onclick="unlockDiary()">Unlock 🔓</button>
+        <div id="pinError" class="pinError"></div>
+    </div>
+</div>
 
 </body>
 </html>
