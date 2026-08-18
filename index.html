@@ -857,6 +857,19 @@ button:hover{
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+
+<style>
+.pdfOptions{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:15px}
+.pdfOptions label{display:flex;flex-direction:column;gap:6px;font-weight:600}
+.pdfOptions input,.pdfOptions select{padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:inherit}
+.pdfCheck{display:flex!important;flex-direction:row!important;align-items:center;gap:8px!important}
+.pdfCheck input{width:auto}
+.bookPreview{margin-top:18px;padding:28px;border-radius:22px;min-height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.backupGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
+.backupItem{padding:15px;border-radius:15px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1)}
+.offlineBadge{display:inline-block;padding:8px 12px;border-radius:20px;background:rgba(34,197,94,.15);color:#86efac;font-size:13px}
+</style>
+
 </head>
 
 <body>
@@ -980,6 +993,9 @@ button:hover{
             🌙 Theme
         </button>
 
+
+        <button onclick="openPage('pdfDesigner')">📖 PDF Book Designer</button>
+        <button onclick="openPage('completeBackup')">📦 Complete Backup</button>
         <button onclick="exportData()">
             ⬇ Export Backup
         </button>
@@ -4202,6 +4218,164 @@ async function exportFullDiaryPDF(){
 }
 
 
+
+/* =====================================================
+   PDF BOOK DESIGNER
+   ===================================================== */
+function pdUser(){return localStorage.getItem("user")||"guest";}
+
+function pdEntries(){
+ const u=pdUser(), a=[];
+ for(let i=0;i<localStorage.length;i++){
+  const k=localStorage.key(i);
+  if(k && k.startsWith("diary_"+u+"_")){
+   const d=k.slice(("diary_"+u+"_").length);
+   if(/^\d{4}-\d{2}-\d{2}$/.test(d)){
+    let c=localStorage.getItem(k)||"";
+    try{c=decodeData(c)}catch(e){}
+    a.push({date:d,html:c,key:k});
+   }
+  }
+ }
+ return a.sort((x,y)=>x.date.localeCompare(y.date));
+}
+function pdText(h){
+ const d=document.createElement("div");d.innerHTML=h||"";
+ return (d.innerText||"").replace(/\u00a0/g," ").trim();
+}
+function pdMood(date){
+ const u=pdUser();
+ for(const k of ["mood_"+u+"_"+date,"mood_diary_"+u+"_"+date,"diaryMood_"+u+"_"+date]){
+  const v=localStorage.getItem(k);if(v)return v;
+ }
+ return "";
+}
+function pdPhotos(date){
+ const u=pdUser();
+ for(const k of ["photos_diary_"+u+"_"+date,"photos_"+u+"_"+date,"photo_diary_"+u+"_"+date]){
+  const r=localStorage.getItem(k);if(!r)continue;
+  try{const x=JSON.parse(r);if(Array.isArray(x))return x;if(x.photos)return x.photos;}catch(e){}
+ }
+ return [];
+}
+function updatePDFPreview(){
+ const t=document.getElementById("pdfTitle"),a=document.getElementById("pdfAuthor"),y=document.getElementById("pdfYear");
+ if(document.getElementById("previewTitle"))document.getElementById("previewTitle").textContent=t?.value||"My Diary";
+ if(document.getElementById("previewAuthor"))document.getElementById("previewAuthor").textContent="By "+(a?.value||pdUser());
+ if(document.getElementById("previewYear"))document.getElementById("previewYear").textContent=y?.value||new Date().getFullYear();
+}
+document.addEventListener("input",e=>{if(["pdfTitle","pdfAuthor","pdfYear","pdfCover"].includes(e.target.id))updatePDFPreview();});
+setTimeout(updatePDFPreview,100);
+
+function exportDesignedDiaryPDF(){
+ if(!window.jspdf){alert("PDF library is loading. Try again after a moment.");return;}
+ const entries=pdEntries();if(!entries.length){alert("No saved diaries found.");return;}
+ const {jsPDF}=window.jspdf;
+ const pdf=new jsPDF({unit:"mm",format:"a4"});
+ const title=document.getElementById("pdfTitle")?.value||"My Diary";
+ const author=document.getElementById("pdfAuthor")?.value||pdUser();
+ const year=document.getElementById("pdfYear")?.value||new Date().getFullYear();
+ const cover=document.getElementById("pdfCover")?.value||"classic";
+ const incMood=document.getElementById("pdfMood")?.checked;
+ const incPhotos=document.getElementById("pdfPhotos")?.checked;
+ const incPages=document.getElementById("pdfPages")?.checked;
+ const toc=document.getElementById("pdfContents")?.checked;
+ const chapters=document.getElementById("pdfChapters")?.checked;
+
+ let bg=[245,248,250],fg=[15,23,42],ac=[14,116,144];
+ if(cover==="dark"){bg=[15,23,42];fg=[255,255,255];ac=[34,211,238]}
+ if(cover==="memory"){bg=[254,243,199];fg=[66,32,6];ac=[190,24,93]}
+ if(cover==="minimal"){bg=[248,250,252];fg=[15,23,42];ac=[71,85,105]}
+ pdf.setFillColor(...bg);pdf.rect(0,0,210,297,"F");
+ pdf.setTextColor(...ac);pdf.setFontSize(42);pdf.text("MY DIARY",105,105,{align:"center"});
+ pdf.setTextColor(...fg);pdf.setFontSize(20);pdf.text(title,105,123,{align:"center"});
+ pdf.setFontSize(12);pdf.text("By "+author,105,140,{align:"center"});pdf.text(String(year),105,151,{align:"center"});
+
+ if(toc){
+  pdf.addPage();pdf.setTextColor(15,23,42);pdf.setFontSize(24);pdf.text("Table of Contents",18,25);
+  pdf.setFontSize(10);let yy=40;
+  entries.forEach((e,i)=>{if(yy<280){pdf.text((i+1)+". "+e.date+" — "+new Date(e.date+"T00:00:00").toLocaleString(undefined,{month:"long",year:"numeric"}),20,yy);yy+=6;}});
+ }
+ let lastMonth="";
+ entries.forEach(e=>{
+  const month=e.date.slice(0,7);
+  if(chapters && month!==lastMonth){
+   pdf.addPage();pdf.setFillColor(241,245,249);pdf.rect(0,0,210,297,"F");
+   pdf.setTextColor(14,116,144);pdf.setFontSize(30);
+   pdf.text(new Date(e.date+"T00:00:00").toLocaleString(undefined,{month:"long",year:"numeric"}),105,140,{align:"center"});
+   pdf.setFontSize(11);pdf.text("Diary Chapter",105,153,{align:"center"});lastMonth=month;
+  }
+  pdf.addPage();pdf.setTextColor(14,116,144);pdf.setFontSize(22);pdf.text("📔 My Diary",18,24);
+  pdf.setTextColor(15,23,42);pdf.setFontSize(17);pdf.text(e.date,18,37);
+  if(incMood){const m=pdMood(e.date);if(m)pdf.setFontSize(10),pdf.text("Mood: "+m,150,37);}
+  pdf.line(18,43,192,43);
+  let y=54;pdf.setTextColor(30,41,59);pdf.setFontSize(11);
+  const lines=pdf.splitTextToSize(pdText(e.html)||"(Empty diary)",174);
+  lines.forEach(line=>{if(y>276){pdf.addPage();y=22;}pdf.text(line,18,y);y+=6;});
+  if(incPhotos){
+   for(const p of pdPhotos(e.date).slice(0,4)){
+    if(typeof p!=="string"||!p.startsWith("data:image"))continue;
+    if(y>220){pdf.addPage();y=22;}
+    try{const pr=pdf.getImageProperties(p),r=Math.min(75/pr.width,52/pr.height);pdf.addImage(p,"JPEG",18,y,pr.width*r,pr.height*r);y+=pr.height*r+8;}catch(e){}
+   }
+  }
+ });
+ if(incPages){
+  const total=pdf.getNumberOfPages();
+  for(let i=1;i<=total;i++){pdf.setPage(i);pdf.setFontSize(8);pdf.setTextColor(100,116,139);pdf.text("Page "+i+" of "+total,192,288,{align:"right"});}
+ }
+ pdf.save((title.replace(/[^a-z0-9_-]/gi,"-")||"My-Diary")+"-"+year+".pdf");
+ if(typeof showMsg==="function")showMsg("Beautiful PDF Book created 📖");
+}
+
+/* =====================================================
+   COMPLETE BACKUP
+   ===================================================== */
+function exportCompleteBackup(){
+ const data={format:"My Diary Pro Complete Backup",version:1,exportedAt:new Date().toISOString(),localStorage:{}};
+ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);data.localStorage[k]=localStorage.getItem(k);}
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="my-diary-COMPLETE-BACKUP-"+new Date().toISOString().slice(0,10)+".json";
+ document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+ const s=document.getElementById("backupStatus");if(s)s.innerText="Complete backup downloaded 📦";
+ if(typeof showMsg==="function")showMsg("Complete Backup Exported 📦");
+}
+function importCompleteBackup(event){
+ const file=event.target.files[0];if(!file)return;
+ const r=new FileReader();
+ r.onload=e=>{try{
+  const b=JSON.parse(e.target.result),data=b.localStorage||b;
+  if(!data||typeof data!=="object")throw Error();
+  if(!confirm("Restore this complete backup? Existing matching local data will be replaced."))return;
+  Object.keys(data).forEach(k=>{if(typeof data[k]==="string")localStorage.setItem(k,data[k]);});
+  alert("Complete backup restored successfully ✅");location.reload();
+ }catch(err){alert("Invalid backup file ❌");}};
+ r.readAsText(file);event.target.value="";
+}
+
+/* =====================================================
+   OFFLINE-FIRST STATUS
+   ===================================================== */
+function diaryOfflineStatus(){
+ const b=document.getElementById("offlineBadge");if(!b)return;
+ b.textContent=navigator.onLine?"🟢 Online • Offline data ready":"🟠 Offline • Diary still works";
+}
+window.addEventListener("online",diaryOfflineStatus);window.addEventListener("offline",diaryOfflineStatus);diaryOfflineStatus();
+
+/* Create a service worker from a Blob when browser allows it.
+   For production GitHub Pages/PWA, a real sw.js file is recommended. */
+async function registerDiaryOfflineSW(){
+ if(!("serviceWorker" in navigator)||!window.isSecureContext)return;
+ const code=`const C='my-diary-offline-v1';
+self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll([location.href])).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(x=>x||fetch(e.request).then(r=>{const q=r.clone();caches.open(C).then(c=>c.put(e.request,q));return r}).catch(()=>x)))});`;
+ try{const u=URL.createObjectURL(new Blob([code],{type:"text/javascript"}));await navigator.serviceWorker.register(u)}catch(e){}
+}
+registerDiaryOfflineSW();
+
+
 /* =====================================================
    BACKUP EXPORT
 ===================================================== */
@@ -4704,6 +4878,64 @@ window.addEventListener(
         <button class="loginBtn" onclick="unlockDiary()">Unlock 🔓</button>
         <div id="pinError" class="pinError"></div>
     </div>
+</div>
+
+
+<!-- ================= PDF BOOK DESIGNER ================= -->
+<div id="pdfDesigner" class="page">
+ <div class="card">
+  <h2>📖 Full Diary PDF Book Designer</h2>
+  <p>Customize your personal diary book before exporting.</p>
+  <div class="pdfOptions">
+   <label>📕 Cover Title<input id="pdfTitle" value="My Diary"></label>
+   <label>✍️ Author Name<input id="pdfAuthor" placeholder="Your Name"></label>
+   <label>📅 Year<input id="pdfYear" type="number"></label>
+   <label>🎨 Cover Design<select id="pdfCover">
+    <option value="classic">Classic Journal</option>
+    <option value="minimal">Minimal</option>
+    <option value="memory">Memory Book</option>
+    <option value="dark">Midnight Diary</option>
+   </select></label>
+   <label class="pdfCheck"><input id="pdfMood" type="checkbox" checked> 😊 Mood Icons</label>
+   <label class="pdfCheck"><input id="pdfPhotos" type="checkbox" checked> 📸 Photos</label>
+   <label class="pdfCheck"><input id="pdfPages" type="checkbox" checked> 🔢 Page Numbers</label>
+   <label class="pdfCheck"><input id="pdfContents" type="checkbox" checked> 📑 Table of Contents</label>
+   <label class="pdfCheck"><input id="pdfChapters" type="checkbox" checked> 🗓 Month Chapters</label>
+  </div>
+  <div class="bookPreview" id="bookPreview">
+   <div style="font-size:45px">📔</div><h1 id="previewTitle">My Diary</h1>
+   <p id="previewAuthor">Personal Journal</p><p id="previewYear"></p>
+  </div>
+  <button class="loginBtn" onclick="exportDesignedDiaryPDF()">📖 Create Beautiful PDF Book</button>
+ </div>
+</div>
+
+<!-- ================= COMPLETE BACKUP ================= -->
+<div id="completeBackup" class="page">
+ <div class="card">
+  <h2>📦 Complete Diary Backup</h2>
+  <p>One backup contains diaries, photos, favorites, tags, moods, history and settings.</p>
+  <div class="backupGrid">
+   <div class="backupItem">📔 <b>Diaries</b></div>
+   <div class="backupItem">📸 <b>Photos</b></div>
+   <div class="backupItem">⭐ <b>Favorites</b></div>
+   <div class="backupItem">🏷️ <b>Tags</b></div>
+   <div class="backupItem">😊 <b>Mood</b></div>
+   <div class="backupItem">🕘 <b>History</b></div>
+   <div class="backupItem">⚙️ <b>Settings</b></div>
+   <div class="backupItem">🔐 <b>All Local Data</b></div>
+  </div>
+  <button class="loginBtn" onclick="exportCompleteBackup()">📦 Download Complete Backup</button>
+  <label class="actionBtn" style="display:block;text-align:center;cursor:pointer;margin-top:10px">
+   ♻️ Restore Complete Backup
+   <input type="file" accept=".json" onchange="importCompleteBackup(event)" hidden>
+  </label>
+  <div id="backupStatus" class="msg"></div>
+ </div>
+</div>
+
+<div id="offlineBadgeBox" style="position:fixed;left:15px;bottom:15px;z-index:99999">
+ <span class="offlineBadge" id="offlineBadge">🟢 Offline-ready</span>
 </div>
 
 </body>
